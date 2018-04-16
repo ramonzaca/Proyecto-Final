@@ -1520,7 +1520,7 @@ namespace SharpNeatGUI
                 INeatExperiment exp = GetSelectedExperiment();
                 NeatAlgorithmStats stats = _ea.Statistics;
                 string file = string.Format(_filenameNumberFormatter, "../../../Poblaciones/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
-                                                exp.DefaultPopulationSize, EasyChangeParams.SEED, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
+                                                _ea.GenomeList.Count, EasyChangeParams.SEED, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
 
                 // Save genomes to xml file.
                 using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))
