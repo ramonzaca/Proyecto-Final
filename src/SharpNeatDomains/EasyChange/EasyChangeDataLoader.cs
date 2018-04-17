@@ -17,7 +17,6 @@ namespace SharpNeat.Domains.EasyChange
         static double[] allIdentifiers;
         static List<double[]> allImages;
         static bool[] testClases;
-        static int separation;
 
         #region Properties
 
@@ -69,18 +68,12 @@ namespace SharpNeat.Domains.EasyChange
             }
         }
 
-        public int Separation
-        {
-            get
-            {
-                return separation;
-            }
-        }
+   
 
         #endregion
 
         // Función de inicialización de cargado de datos
-        public void Initialize(string jsonPath = @"")
+        public void Initialize(string jsonPath = @"",bool normalizeData = true, int normalizeRange = 2, int seed = 8978  )
         {
 
             moleculeCaracteristics = loadDataset(jsonPath);
@@ -89,15 +82,14 @@ namespace SharpNeat.Domains.EasyChange
             _pixelCount = moleculeCaracteristics[0].Length - 1;
             allIdentifiers = new double[_totalImageCount];
             allImages = new List<double[]>();
-            double temp = _totalImageCount * (1 - EasyChangeParams.TESTPORCENTAGE);
-            separation = (int)temp;
+           
             
 
             // Mezclo los resultados
-            Shuffle();
+            Shuffle(seed);
 
             // Si se decide normalizar los datos
-            if (EasyChangeParams.NORMALIZEDATA)
+            if (normalizeData)
             {
                 double[] secArray = new double[moleculeCaracteristics.Count];
                 for (int i = 0; i < moleculeCaracteristics[0].Length - 1; i++) // No normalizar la salida
@@ -106,7 +98,7 @@ namespace SharpNeat.Domains.EasyChange
                     {
                         secArray[j] = moleculeCaracteristics[j][i];
                     }
-                    var normalizedArray = NormalizeData(secArray, -EasyChangeParams.NORMALIZERANGE, EasyChangeParams.NORMALIZERANGE);
+                    var normalizedArray = NormalizeData(secArray, -normalizeRange, normalizeRange);
                     for (int j = 0; j < moleculeCaracteristics.Count; j++)
                     {
                         moleculeCaracteristics[j][i] = normalizedArray[j];
@@ -140,7 +132,7 @@ namespace SharpNeat.Domains.EasyChange
 
             List<double[]> valuesFROMcsv = new List<double[]>();
             string currentAssemblyDirectoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string filesPath = currentAssemblyDirectoryName + "/../../../Data/" + EasyChangeParams.FILENAME;
+            string filesPath = currentAssemblyDirectoryName + "/../../../Data/" + jsonPath;
 
             int lineCount = 0;
 
@@ -214,10 +206,10 @@ namespace SharpNeat.Domains.EasyChange
             return range;
         }
 
-        public static void Shuffle()
+        public static void Shuffle(int seed)
         {
 
-            Random rng = new Random(EasyChangeParams.SEED);
+            Random rng = new Random(seed);
             int n = moleculeCaracteristics.Count;
             while (n > 1)
             {

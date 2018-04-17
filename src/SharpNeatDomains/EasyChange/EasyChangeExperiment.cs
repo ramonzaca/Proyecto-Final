@@ -44,6 +44,11 @@ namespace SharpNeat.Domains.EasyChange
         string _description;
         ParallelOptions _parallelOptions;
         EasyChangeDataLoader _dataLoader;
+        int _maxGen;
+        double _testPorcentage;
+        int _savePeriod;
+        int _seed;
+
 
 
         #region Constructor
@@ -53,10 +58,27 @@ namespace SharpNeat.Domains.EasyChange
         /// </summary>
         public EasyChangeExperiment()
         {
-            _dataLoader = new EasyChangeDataLoader();
+
         }
 
         #endregion
+
+        public int Seed
+        {
+            get
+            {
+                return _seed;
+            }
+        }
+
+        public int SavePeriod
+        {
+            get
+            {
+                return _savePeriod;
+            }
+        }
+
 
         #region INeatExperiment
 
@@ -132,12 +154,21 @@ namespace SharpNeat.Domains.EasyChange
             _complexityThreshold = XmlUtils.TryGetValueAsInt(xmlConfig, "ComplexityThreshold");
             _description = XmlUtils.TryGetValueAsString(xmlConfig, "Description");
             _parallelOptions = ExperimentUtils.ReadParallelOptions(xmlConfig);
-            _dataLoader.Initialize( XmlUtils.TryGetValueAsString(xmlConfig, "DatasetPath"));
+            _seed = XmlUtils.GetValueAsInt(xmlConfig, "Seed");
+            _dataLoader = new EasyChangeDataLoader();
+            _dataLoader.Initialize( XmlUtils.TryGetValueAsString(xmlConfig, "DatasetPath"),
+                                    XmlUtils.GetValueAsBool(xmlConfig,"NormalizeData"),
+                                    XmlUtils.GetValueAsInt(xmlConfig,"NormalizeRange"),
+                                    _seed);
             _eaParams = new NeatEvolutionAlgorithmParameters();
             _eaParams.SpecieCount = _specieCount;
             _neatGenomeParams = new NeatGenomeParameters();
             _neatGenomeParams.FeedforwardOnly = _activationScheme.AcyclicNetwork;
             _neatGenomeParams.ActivationFn = LeakyReLU.__DefaultInstance;
+            _maxGen = XmlUtils.GetValueAsInt(xmlConfig, "MaxGen");
+            _testPorcentage = (XmlUtils.GetValueAsInt(xmlConfig,"TestPorcentage")*1.0) / 100;
+            _savePeriod = XmlUtils.GetValueAsInt(xmlConfig, "SavePeriod");
+
         }
 
         /// <summary>
@@ -222,7 +253,7 @@ namespace SharpNeat.Domains.EasyChange
             NeatEvolutionAlgorithm<NeatGenome> ea = new NeatEvolutionAlgorithm<NeatGenome>(_eaParams, speciationStrategy, complexityRegulationStrategy);
 
             // Create IBlackBox evaluator.
-            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader);
+            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader,_maxGen,_testPorcentage);
 
             // Create genome decoder. Decodes to a neural network packaged with an activation scheme.
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder =  CreateGenomeDecoder();
@@ -234,7 +265,7 @@ namespace SharpNeat.Domains.EasyChange
             // that were in the population in previous generations (elite genomes). This is determined by examining each genome's evaluation info object.
             IGenomeListEvaluator<NeatGenome> selectiveEvaluator = new SelectiveGenomeListEvaluator<NeatGenome>(
                                                                                     innerEvaluator,
-                                                                                    SelectiveGenomeListEvaluator<NeatGenome>.CreatePredicate_CheckforTrainingStatus(ea,EasyChangeParams.MAXGENERATIONS));
+                                                                                    SelectiveGenomeListEvaluator<NeatGenome>.CreatePredicate_CheckforTrainingStatus(ea,_maxGen));
             
             // Initialize the evolution algorithm.
             ea.Initialize(selectiveEvaluator, genomeFactory, genomeList);

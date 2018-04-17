@@ -1464,9 +1464,9 @@ namespace SharpNeatGUI
         void _ea_UpdateEvent(object sender, EventArgs e)
         {
             // Handle writing to log window. Switch execution to GUI thread if necessary.
-            if(this.InvokeRequired)
+            if (this.InvokeRequired)
             {
-                this.BeginInvoke(new MethodInvoker(delegate() 
+                this.BeginInvoke(new MethodInvoker(delegate ()
                 {
                     // Update stats on screen.
                     UpdateGuiState_EaStats();
@@ -1476,7 +1476,7 @@ namespace SharpNeatGUI
 
                     // Check if we should save the champ genome to a file.
                     NeatGenome champGenome = _ea.CurrentChampGenome;
-                    if(chkFileSaveGenomeOnImprovement.Checked && champGenome.EvaluationInfo.Fitness > _champGenomeFitness) 
+                    if (chkFileSaveGenomeOnImprovement.Checked && champGenome.EvaluationInfo.Fitness > _champGenomeFitness)
                     {
                         _champGenomeFitness = champGenome.EvaluationInfo.Fitness;
                         string filename = string.Format(_filenameNumberFormatter, "{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
@@ -1486,16 +1486,16 @@ namespace SharpNeatGUI
                         INeatExperiment experiment = GetSelectedExperiment();
 
                         // Save genome to xml file.
-                        using(XmlWriter xw = XmlWriter.Create(filename, _xwSettings))
+                        using (XmlWriter xw = XmlWriter.Create(filename, _xwSettings))
                         {
-                            experiment.SavePopulation(xw, new NeatGenome[] {champGenome});
+                            experiment.SavePopulation(xw, new NeatGenome[] { champGenome });
                         }
                     }
                 }));
             }
 
             // Handle writing to log file.
-            if(null != _logFileWriter)
+            if (null != _logFileWriter)
             {
                 NeatAlgorithmStats stats = _ea.Statistics;
                 _logFileWriter.WriteLine(string.Format("{0:yyyy-MM-dd HH:mm:ss.fff},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}",
@@ -1512,15 +1512,16 @@ namespace SharpNeatGUI
                                                         _ea.ComplexityRegulationMode));
                 _logFileWriter.Flush();
             }
+            // Get the currently selected experiment.
+            INeatExperiment exp = GetSelectedExperiment();
 
             //Save Population (Funciona cuando le pinta)
-            if (_ea.CurrentGeneration % EasyChangeParams.SAVEPERIOD == 0 && _ea.CurrentGeneration > 0)
+            if (_ea.CurrentGeneration % ((EasyChangeExperiment)exp).SavePeriod== 0 && _ea.CurrentGeneration > 0)
             {
-                // Get the currently selected experiment.
-                INeatExperiment exp = GetSelectedExperiment();
+               
                 NeatAlgorithmStats stats = _ea.Statistics;
                 string file = string.Format(_filenameNumberFormatter, "../../../Poblaciones/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
-                                                _ea.GenomeList.Count, EasyChangeParams.SEED, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
+                                                _ea.GenomeList.Count, ((EasyChangeExperiment)exp).Seed, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
 
                 // Save genomes to xml file.
                 using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))

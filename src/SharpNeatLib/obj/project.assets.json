@@ -4725,11 +4725,11 @@
   "project": {
     "version": "2.4.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Agustin\\Desktop\\Proyecto final\\sharpneat-master\\src\\SharpNeatLib\\SharpNeatLib.csproj",
+      "projectUniqueName": "C:\\Users\\Agustin\\Desktop\\Proyecto final\\EvoClassifier\\Proyecto-Final\\src\\SharpNeatLib\\SharpNeatLib.csproj",
       "projectName": "SharpNeatLib",
-      "projectPath": "C:\\Users\\Agustin\\Desktop\\Proyecto final\\sharpneat-master\\src\\SharpNeatLib\\SharpNeatLib.csproj",
+      "projectPath": "C:\\Users\\Agustin\\Desktop\\Proyecto final\\EvoClassifier\\Proyecto-Final\\src\\SharpNeatLib\\SharpNeatLib.csproj",
       "packagesPath": "C:\\Users\\Agustin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Agustin\\Desktop\\Proyecto final\\sharpneat-master\\src\\SharpNeatLib\\obj\\",
+      "outputPath": "C:\\Users\\Agustin\\Desktop\\Proyecto final\\EvoClassifier\\Proyecto-Final\\src\\SharpNeatLib\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

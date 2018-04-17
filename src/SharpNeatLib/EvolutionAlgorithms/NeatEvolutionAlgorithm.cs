@@ -37,6 +37,7 @@ namespace SharpNeat.EvolutionAlgorithms
         readonly NeatEvolutionAlgorithmParameters _eaParamsComplexifying;
         readonly NeatEvolutionAlgorithmParameters _eaParamsSimplifying;
 
+
         readonly ISpeciationStrategy<TGenome> _speciationStrategy;
         IList<Specie<TGenome>> _specieList;
         /// <summary>Index of the specie that contains _currentBestGenome.</summary>

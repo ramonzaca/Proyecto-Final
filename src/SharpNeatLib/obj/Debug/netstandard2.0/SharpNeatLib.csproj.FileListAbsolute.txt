@@ -1,9 +1,8 @@
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\bin\Debug\netstandard2.0\SharpNeatLib.deps.json
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\bin\Debug\netstandard2.0\SharpNeatLib.dll
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\bin\Debug\netstandard2.0\SharpNeatLib.pdb
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.csprojResolveAssemblyReference.cache
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.csproj.CoreCompileInputs.cache
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.AssemblyInfoInputs.cache
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.AssemblyInfo.cs
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.dll
-C:\Users\Agustin\Desktop\Proyecto final\sharpneat-master\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.pdb
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\bin\Debug\netstandard2.0\SharpNeatLib.deps.json
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\bin\Debug\netstandard2.0\SharpNeatLib.dll
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\bin\Debug\netstandard2.0\SharpNeatLib.pdb
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.csproj.CoreCompileInputs.cache
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.AssemblyInfoInputs.cache
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.AssemblyInfo.cs
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.dll
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatLib\obj\Debug\netstandard2.0\SharpNeatLib.pdb

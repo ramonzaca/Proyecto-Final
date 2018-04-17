@@ -29,21 +29,35 @@ namespace SharpNeat.Domains.EasyChange
     {
         ulong _evalCount;
         bool _stopConditionSatisfied;
+
         NeatEvolutionAlgorithm<NeatGenome> _ea;
         bool trainingMode;
         static int _maxGen;
-        EasyChangeDataLoader _dataLoader;
+        static List<double[]> moleculeCaracteristics;
+        static int _totalImageCount;
+        static int _pixelCount; // Todos las moléculas tienen la misma cantidad de características
+        static double[] allIdentifiers;
+        static List<double[]> allImages;
+        static bool[] testClases;
+        static int separation;
 
         #region IPhenomeEvaluator<IBlackBox> Members
 
-        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader)
+        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage)
         {
-
+            
             _ea = ea;
             trainingMode = true;
-            _maxGen = EasyChangeParams.MAXGENERATIONS;
+            _maxGen = maxGen;
             _stopConditionSatisfied = false;
-            _dataLoader = dataLoader;
+            moleculeCaracteristics = dataLoader.MoleculeCaracteristics;
+            _totalImageCount = dataLoader.TotalImageCount;
+            _pixelCount = dataLoader.PixelCount;
+            allIdentifiers = dataLoader.AllIdentifiers;
+            allImages = dataLoader.AllImages;
+            testClases = dataLoader.TestClases;
+            double temp = _totalImageCount * (1 - testPorcentage);
+            separation = (int)temp;
 
         }
         /// <summary>
@@ -75,7 +89,6 @@ namespace SharpNeat.Domains.EasyChange
             ISignalArray inputArr = box.InputSignalArray;
             ISignalArray outputArr = box.OutputSignalArray;
             _evalCount++;
-
      
             if(_ea.CurrentGeneration == _maxGen + 1)
             {
@@ -84,11 +97,11 @@ namespace SharpNeat.Domains.EasyChange
 
             if (trainingMode) {
                 
-                for (int i = 0; i < _dataLoader.Separation; i++)
+                for (int i = 0; i < separation; i++)
                 {
-                    for (int j = 0; j < _dataLoader.PixelCount; j++)
+                    for (int j = 0; j < _pixelCount; j++)
                     {
-                        inputArr[j] = _dataLoader.AllImages[i][j];
+                        inputArr[j] = allImages[i][j];
                     }
 
                     // Activate the black box.
@@ -102,7 +115,7 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && _dataLoader.TestClases[i] || output < 0.5 && !_dataLoader.TestClases[i])
+                    if (output >= 0.5 && testClases[i] || output < 0.5 && !testClases[i])
                         fitness += 1.0;
 
 
@@ -110,7 +123,7 @@ namespace SharpNeat.Domains.EasyChange
                     box.ResetState();
                 }
 
-                fitness /= _dataLoader.Separation;
+                fitness /= separation;
                 fitness *= 100;
                 return new FitnessInfo(fitness, fitness);
             }
@@ -123,11 +136,11 @@ namespace SharpNeat.Domains.EasyChange
                 }
               else
                 {
-                    for (int t = _dataLoader.Separation; t < _dataLoader.TotalImageCount; t++)
+                    for (int t = separation; t < _totalImageCount; t++)
                     {
-                        for (int j = 0; j < _dataLoader.PixelCount; j++)
+                        for (int j = 0; j < _pixelCount; j++)
                         {
-                            inputArr[j] = _dataLoader.AllImages[t][j];
+                            inputArr[j] = allImages[t][j];
                         }
 
                         // Activate the black box.
@@ -141,7 +154,7 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && _dataLoader.TestClases[t] || output < 0.5 && !_dataLoader.TestClases[t])
+                        if (output >= 0.5 && testClases[t] || output < 0.5 && !testClases[t])
                             fitness += 1.0;
                  
 
@@ -149,7 +162,7 @@ namespace SharpNeat.Domains.EasyChange
                         box.ResetState();
                     }
 
-                    fitness /= (_dataLoader.TotalImageCount - _dataLoader.Separation);
+                    fitness /= (_totalImageCount - separation);
                     fitness *= 100;
                     return new FitnessInfo(fitness, fitness);
                 }
