@@ -43,6 +43,7 @@ namespace SharpNeat.Domains.EasyChange
         int? _complexityThreshold;
         string _description;
         ParallelOptions _parallelOptions;
+        EasyChangeDataLoader _dataLoader;
 
 
         #region Constructor
@@ -52,6 +53,7 @@ namespace SharpNeat.Domains.EasyChange
         /// </summary>
         public EasyChangeExperiment()
         {
+            _dataLoader = new EasyChangeDataLoader();
         }
 
         #endregion
@@ -79,7 +81,7 @@ namespace SharpNeat.Domains.EasyChange
         /// </summary>
         public int InputCount
         {
-            get { return EasyChangeParams.INPUTS; }
+            get { return _dataLoader.PixelCount; }
         }
 
         /// <summary>
@@ -130,7 +132,7 @@ namespace SharpNeat.Domains.EasyChange
             _complexityThreshold = XmlUtils.TryGetValueAsInt(xmlConfig, "ComplexityThreshold");
             _description = XmlUtils.TryGetValueAsString(xmlConfig, "Description");
             _parallelOptions = ExperimentUtils.ReadParallelOptions(xmlConfig);
-
+            _dataLoader.Initialize( XmlUtils.TryGetValueAsString(xmlConfig, "DatasetPath"));
             _eaParams = new NeatEvolutionAlgorithmParameters();
             _eaParams.SpecieCount = _specieCount;
             _neatGenomeParams = new NeatGenomeParameters();
@@ -220,7 +222,7 @@ namespace SharpNeat.Domains.EasyChange
             NeatEvolutionAlgorithm<NeatGenome> ea = new NeatEvolutionAlgorithm<NeatGenome>(_eaParams, speciationStrategy, complexityRegulationStrategy);
 
             // Create IBlackBox evaluator.
-            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea);
+            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader);
 
             // Create genome decoder. Decodes to a neural network packaged with an activation scheme.
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder =  CreateGenomeDecoder();

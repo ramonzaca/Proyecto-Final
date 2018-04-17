@@ -70,7 +70,7 @@
     <Compile Include="BinarySixMultiplexer\BinarySixMultiplexerExperiment.cs" />
     <Compile Include="BinarySixMultiplexer\RbfBinarySixMultiplexerExperiment.cs" />
     <Compile Include="EasyChange\EasyChangeParams.cs" />
-    <Compile Include="EasyChange\DatasetDataLoader.cs" />
+    <Compile Include="EasyChange\EasyChangeDataLoader.cs" />
     <Compile Include="EasyChange\EasyChangeEvaluator.cs" />
     <Compile Include="EasyChange\EasyChangeExperiment.cs" />
     <Compile Include="BinaryThreeMultiplexer\BinaryThreeMultiplexerExperiment.cs" />

@@ -29,73 +29,21 @@ namespace SharpNeat.Domains.EasyChange
     {
         ulong _evalCount;
         bool _stopConditionSatisfied;
-        static List<double[]> moleculeCaracteristics;
-        static int _totalImageCount;
-        static int _pixelCount; // Todos las moléculas tienen la misma cantidad de características
-        static double[] allIdentifiers;
-        static List<double[]> allImages;
-        static bool[] testClases;
-        int separation;
         NeatEvolutionAlgorithm<NeatGenome> _ea;
         bool trainingMode;
         static int _maxGen;
+        EasyChangeDataLoader _dataLoader;
 
         #region IPhenomeEvaluator<IBlackBox> Members
 
-        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea)
+        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader)
         {
-            moleculeCaracteristics = DatasetDataLoader.loadDataset();
-            //double[] debuj = GetRange(moleculeCaracteristics);
-            _totalImageCount = moleculeCaracteristics.Count;
-            _pixelCount = moleculeCaracteristics[0].Length - 1;
-            allIdentifiers = new double[_totalImageCount];
-            allImages = new List<double[]>();
-            double temp = _totalImageCount * (1 - EasyChangeParams.TESTPORCENTAGE);
-            separation = (int)temp;
+
             _ea = ea;
             trainingMode = true;
             _maxGen = EasyChangeParams.MAXGENERATIONS;
             _stopConditionSatisfied = false;
-
-            // Mezclo los resultados
-            Shuffle();      
-
-            // Si se decide normalizar los datos
-            if (EasyChangeParams.NORMALIZEDATA)
-            {
-                double[] secArray = new double[moleculeCaracteristics.Count];
-                for (int i = 0; i < moleculeCaracteristics[0].Length - 1; i++) // No normalizar la salida
-                {
-                    for (int j = 0; j < moleculeCaracteristics.Count; j++)
-                    {
-                        secArray[j] = moleculeCaracteristics[j][i];
-                    }
-                    var normalizedArray = NormalizeData(secArray, -EasyChangeParams.NORMALIZERANGE, EasyChangeParams.NORMALIZERANGE);
-                    for (int j = 0; j < moleculeCaracteristics.Count; j++)
-                    {
-                        moleculeCaracteristics[j][i] = normalizedArray[j];
-                    }
-
-                }
-            }
-            // Selecciono la salida
-            for (int i = 0; i < moleculeCaracteristics.Count; i++)
-            {
-                // El valor de la propiedad a calcular se encuentra al final del arreglo
-                allIdentifiers[i] = moleculeCaracteristics[i][_pixelCount];
-
-                // Se evalúan todas las propiedades
-                allImages.Add(moleculeCaracteristics[i].Take(_pixelCount).ToArray());
-            }
-
-            //Para analisis de clases
-
-            testClases = new bool[allIdentifiers.Length];
-            for (int p = 0; p < allIdentifiers.Length; p++)
-                if (allIdentifiers[p] == 1.0)
-                    testClases[p] = true;
-                else
-                    testClases[p] = false;
+            _dataLoader = dataLoader;
 
         }
         /// <summary>
@@ -127,6 +75,7 @@ namespace SharpNeat.Domains.EasyChange
             ISignalArray inputArr = box.InputSignalArray;
             ISignalArray outputArr = box.OutputSignalArray;
             _evalCount++;
+
      
             if(_ea.CurrentGeneration == _maxGen + 1)
             {
@@ -135,11 +84,11 @@ namespace SharpNeat.Domains.EasyChange
 
             if (trainingMode) {
                 
-                for (int i = 0; i < separation; i++)
+                for (int i = 0; i < _dataLoader.Separation; i++)
                 {
-                    for (int j = 0; j < _pixelCount; j++)
+                    for (int j = 0; j < _dataLoader.PixelCount; j++)
                     {
-                        inputArr[j] = allImages[i][j];
+                        inputArr[j] = _dataLoader.AllImages[i][j];
                     }
 
                     // Activate the black box.
@@ -153,7 +102,7 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && testClases[i] || output < 0.5 && !testClases[i])
+                    if (output >= 0.5 && _dataLoader.TestClases[i] || output < 0.5 && !_dataLoader.TestClases[i])
                         fitness += 1.0;
 
 
@@ -161,7 +110,7 @@ namespace SharpNeat.Domains.EasyChange
                     box.ResetState();
                 }
 
-                fitness /= separation;
+                fitness /= _dataLoader.Separation;
                 fitness *= 100;
                 return new FitnessInfo(fitness, fitness);
             }
@@ -174,11 +123,11 @@ namespace SharpNeat.Domains.EasyChange
                 }
               else
                 {
-                    for (int t = separation; t < _totalImageCount; t++)
+                    for (int t = _dataLoader.Separation; t < _dataLoader.TotalImageCount; t++)
                     {
-                        for (int j = 0; j < _pixelCount; j++)
+                        for (int j = 0; j < _dataLoader.PixelCount; j++)
                         {
-                            inputArr[j] = allImages[t][j];
+                            inputArr[j] = _dataLoader.AllImages[t][j];
                         }
 
                         // Activate the black box.
@@ -192,7 +141,7 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && testClases[t] || output < 0.5 && !testClases[t])
+                        if (output >= 0.5 && _dataLoader.TestClases[t] || output < 0.5 && !_dataLoader.TestClases[t])
                             fitness += 1.0;
                  
 
@@ -200,7 +149,7 @@ namespace SharpNeat.Domains.EasyChange
                         box.ResetState();
                     }
 
-                    fitness /= (_totalImageCount - separation);
+                    fitness /= (_dataLoader.TotalImageCount - _dataLoader.Separation);
                     fitness *= 100;
                     return new FitnessInfo(fitness, fitness);
                 }
@@ -217,58 +166,6 @@ namespace SharpNeat.Domains.EasyChange
 
         #endregion
 
-        //Función secundaria de normalizado
-        private static double[] NormalizeData(IEnumerable<double> data, int min, int max)
-        {
-            double dataMax = data.Max();
-            double dataMin = data.Min();
-            double range = dataMax - dataMin;
-
-            return data
-                .Select(d => (d - dataMin) / range)
-                .Select(n => ((1 - n) * min + n * max))
-                .ToArray();
-        }
-
-        // Devuelve un arreglo con el rango de cada caracteristica de las moleculas. Solo para propositos de debuj
-        private double[] GetRange(List<double[]> valuesFROMcsv)
-        {
-            double[] range = new double[valuesFROMcsv[0].Length];
-            double min = 0;
-            double max = 0;
-            for (int i = 0; i < valuesFROMcsv[0].Length; i++)
-                for (int j = 0; j < valuesFROMcsv.Count; j++)
-                {
-                    if (j == 0)
-                    {
-                        min = valuesFROMcsv[j][i];
-                        max = valuesFROMcsv[j][i];
-                    }
-                    else
-                    {
-                        if (valuesFROMcsv[j][i] < min)
-                            min = valuesFROMcsv[j][i];
-                        else if (valuesFROMcsv[j][i] > max)
-                            max = valuesFROMcsv[j][i];
-                    }
-                    range[i] = max - min;
-                }
-            return range;
-        }
-
-        public static void Shuffle()
-        {
-
-            Random rng = new Random(EasyChangeParams.SEED);
-            int n = moleculeCaracteristics.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                var value = moleculeCaracteristics[k];
-                moleculeCaracteristics[k] = moleculeCaracteristics[n];
-                moleculeCaracteristics[n] = value;
-            }
-        }
+        
     }
 }
