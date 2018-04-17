@@ -1,3 +1,4 @@
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.csprojResolveAssemblyReference.cache
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeat.View.GraphControl.resources
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.csproj.GenerateResource.cache
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.csproj.CoreCompileInputs.cache
@@ -101,7 +102,6 @@ C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNe
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\bin\Debug\System.Xml.XPath.XDocument.dll
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\bin\Debug\SharpNeatLib.dll
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\bin\Debug\SharpNeatLib.pdb
-C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.csprojResolveAssemblyReference.cache
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.csproj.CopyComplete
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.dll
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatViewLib\obj\Debug\SharpNeatViewLib.pdb

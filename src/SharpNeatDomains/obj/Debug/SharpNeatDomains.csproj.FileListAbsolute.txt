@@ -1,3 +1,4 @@
+C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeatDomains.csprojResolveAssemblyReference.cache
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeat.Domains.CppnGenomeView.resources
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeat.Domains.NeatGenomeView.resources
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeatDomains.csproj.GenerateResource.cache
@@ -123,7 +124,6 @@ C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNe
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\bin\Debug\tr\ZedGraph.resources.dll
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\bin\Debug\zh-cn\ZedGraph.resources.dll
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\bin\Debug\zh-tw\ZedGraph.resources.dll
-C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeatDomains.csprojResolveAssemblyReference.cache
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeatDomains.csproj.CopyComplete
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeatDomains.dll
 C:\Users\Agustin\Desktop\Proyecto final\EvoClassifier\Proyecto-Final\src\SharpNeatDomains\obj\Debug\SharpNeatDomains.pdb
