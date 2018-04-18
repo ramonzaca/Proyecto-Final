@@ -17,8 +17,8 @@
 		  <NormalizeData>true</NormalizeData>
 		  <NormalizeRange>2</NormalizeRange>
 		  <Seed>8989</Seed>
-		  <MaxGen>15000</MaxGen>
-		  <SavePeriod>200</SavePeriod>
+		  <MaxGen>150000</MaxGen>
+		  <SavePeriod>500</SavePeriod>
 		  <TestPorcentage>15</TestPorcentage>
 		<Description>
 EasyChange does something totally unexpected with a random behavior. 

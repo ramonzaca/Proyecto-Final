@@ -103,16 +103,24 @@ namespace SharpNeatGUI
         /// </summary>
         private void InitProblemDomainList()
         {
+            List<ExperimentInfo> expInfoList = new List<ExperimentInfo>();
             // Find all experiment config data files in the current directory (*.experiments.xml)
-            foreach(string filename in Directory.EnumerateFiles(".", "*.experiments.xml"))
+            foreach (string filename in Directory.EnumerateFiles(".", "*.experiments.xml"))
             {
-                List<ExperimentInfo> expInfoList = ExperimentInfo.ReadExperimentXml(filename);
-                foreach(ExperimentInfo expInfo in expInfoList) {
-                    cmbExperiments.Items.Add(new ListItem(string.Empty, expInfo.Name, expInfo));
-                }
+                expInfoList = ExperimentInfo.ReadExperimentXml(filename);
+                
             }
-            // Pre-select first item.
-            cmbExperiments.SelectedIndex = 0;
+
+            ExperimentInfo expInfo = expInfoList[0];
+
+            Assembly assembly = Assembly.LoadFrom(expInfo.AssemblyPath);
+            // TODO: Handle non-gui experiments.
+            _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as IGuiNeatExperiment;
+            _selectedExperiment.Initialize(expInfo.Name, expInfo.XmlConfig);
+            btnLoadDomainDefaults_Click(null, null);
+
+
+
         }
 
         #endregion
@@ -173,16 +181,7 @@ namespace SharpNeatGUI
 
         private IGuiNeatExperiment GetSelectedExperiment()
         {
-            if(null == _selectedExperiment && null != cmbExperiments.SelectedItem)
-            {
-                ExperimentInfo expInfo = (ExperimentInfo)(((ListItem)cmbExperiments.SelectedItem).Data);
-
-                Assembly assembly = Assembly.LoadFrom(expInfo.AssemblyPath);
-                // TODO: Handle non-gui experiments.
-                _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as IGuiNeatExperiment;
-                _selectedExperiment.Initialize(expInfo.Name, expInfo.XmlConfig);
-            }
-            return _selectedExperiment;
+           return _selectedExperiment;
         }
 
         #endregion
@@ -1780,5 +1779,7 @@ namespace SharpNeatGUI
         }
 
         #endregion
+
+  
     }
 }
