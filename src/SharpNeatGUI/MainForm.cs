@@ -117,6 +117,16 @@ namespace SharpNeatGUI
             // TODO: Handle non-gui experiments.
             _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as IGuiNeatExperiment;
             _selectedExperiment.Initialize(expInfo.Name, expInfo.XmlConfig);
+
+            // Load cmb
+
+            foreach (string dataset in Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/../../../Data/"))
+            {
+              
+                cmbExperiments.Items.Add(new ListItem(string.Empty, dataset.Split('/')[dataset.Split('/').Length - 1], dataset));
+            }
+            // Pre-select first item.
+            cmbExperiments.SelectedIndex = 0;
             btnLoadDomainDefaults_Click(null, null);
 
 
@@ -129,10 +139,20 @@ namespace SharpNeatGUI
 
         private void cmbExperiments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Nullify this variable. We get the selected experiment via GetSelectedExperiment(). That method will instantiate 
-            // _selectedExperiment with the currently selected experiment (on-demand instantiation).
-            _selectedExperiment = null;
+            try
+            {
+                // Get the currently selected experiment.
+                EasyChangeExperiment experiment = (EasyChangeExperiment)GetSelectedExperiment();
 
+                // Se reinicializa el dataloader del experimento con el nuevo path
+                experiment.DataLoader.Initialize(((string) ((ListItem)cmbExperiments.SelectedItem).Data), experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);
+                UpdateGuiState();
+            }
+            catch (Exception ex)
+            {
+                __log.ErrorFormat("Error loading dataset. Error message [{0}]", ex.Message);
+            }
+            
             // Close any experiment specific forms that remain open.
             if(null != _bestGenomeForm) {
                 _bestGenomeForm.Close();
@@ -143,6 +163,7 @@ namespace SharpNeatGUI
                 _domainForm.Close();
                 _domainForm = null;
             }
+            
         }
 
         private void btnExperimentInfo_Click(object sender, EventArgs e)
@@ -386,6 +407,7 @@ namespace SharpNeatGUI
             loadSeedGenomeToolStripMenuItem.Enabled = true;
             savePopulationToolStripMenuItem.Enabled = false;
             saveBestGenomeToolStripMenuItem.Enabled = false;
+            toolStripMenuItem1.Enabled = true;
         }
 
         private void UpdateGuiState_PopulationReady()
@@ -427,6 +449,8 @@ namespace SharpNeatGUI
             loadSeedGenomeToolStripMenuItem.Enabled = false;
             savePopulationToolStripMenuItem.Enabled = true;
             saveBestGenomeToolStripMenuItem.Enabled = false;
+            toolStripMenuItem1.Enabled = false;
+            
         }
 
         /// <summary>
@@ -471,6 +495,7 @@ namespace SharpNeatGUI
             loadSeedGenomeToolStripMenuItem.Enabled = false;
             savePopulationToolStripMenuItem.Enabled = true;
             saveBestGenomeToolStripMenuItem.Enabled = (_ea.CurrentChampGenome != null);
+            toolStripMenuItem1.Enabled = false;
         }
 
         /// <summary>
@@ -515,6 +540,7 @@ namespace SharpNeatGUI
             loadSeedGenomeToolStripMenuItem.Enabled = false;
             savePopulationToolStripMenuItem.Enabled = false;
             saveBestGenomeToolStripMenuItem.Enabled = false;
+            toolStripMenuItem1.Enabled = false;
         }
 
         private void UpdateGuiState_EaStats()
@@ -762,7 +788,8 @@ namespace SharpNeatGUI
 
                 // Se reinicializa el dataloader del experimento con el nuevo path
                 experiment.DataLoader.Initialize(filePath, experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);                
-                
+                cmbExperiments.Items.Add(new ListItem(string.Empty, filePath.Split('\\')[filePath.Split('\\').Length - 1], filePath));
+                cmbExperiments.SelectedIndex = cmbExperiments.Items.Count - 1 ;
                 UpdateGuiState();
             }
             catch (Exception ex)
