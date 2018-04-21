@@ -147,6 +147,12 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.txtSavePeriod = new System.Windows.Forms.TextBox();
+            this.txtMaxGen = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.txtTestPorcentage = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -915,6 +921,12 @@
             // gbxEAParameters
             // 
             this.gbxEAParameters.BackColor = System.Drawing.Color.Transparent;
+            this.gbxEAParameters.Controls.Add(this.label24);
+            this.gbxEAParameters.Controls.Add(this.txtTestPorcentage);
+            this.gbxEAParameters.Controls.Add(this.label22);
+            this.gbxEAParameters.Controls.Add(this.label23);
+            this.gbxEAParameters.Controls.Add(this.txtSavePeriod);
+            this.gbxEAParameters.Controls.Add(this.txtMaxGen);
             this.gbxEAParameters.Controls.Add(this.label21);
             this.gbxEAParameters.Controls.Add(this.txtParamNumberOfSpecies);
             this.gbxEAParameters.Controls.Add(this.label4);
@@ -932,7 +944,7 @@
             this.gbxEAParameters.Margin = new System.Windows.Forms.Padding(4);
             this.gbxEAParameters.Name = "gbxEAParameters";
             this.gbxEAParameters.Padding = new System.Windows.Forms.Padding(4);
-            this.gbxEAParameters.Size = new System.Drawing.Size(329, 244);
+            this.gbxEAParameters.Size = new System.Drawing.Size(329, 360);
             this.gbxEAParameters.TabIndex = 16;
             this.gbxEAParameters.TabStop = false;
             this.gbxEAParameters.Text = "Evolution Algorithm Parameters";
@@ -1349,6 +1361,62 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(75, 264);
+            this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(154, 17);
+            this.label22.TabIndex = 61;
+            this.label22.Text = "Amount of Generations";
+            // 
+            // label23
+            // 
+            this.label23.Location = new System.Drawing.Point(75, 296);
+            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(160, 20);
+            this.label23.TabIndex = 60;
+            this.label23.Text = "Save Period";
+            // 
+            // txtSavePeriod
+            // 
+            this.txtSavePeriod.Location = new System.Drawing.Point(8, 292);
+            this.txtSavePeriod.Margin = new System.Windows.Forms.Padding(4);
+            this.txtSavePeriod.Name = "txtSavePeriod";
+            this.txtSavePeriod.Size = new System.Drawing.Size(63, 22);
+            this.txtSavePeriod.TabIndex = 59;
+            this.txtSavePeriod.Text = "50";
+            // 
+            // txtMaxGen
+            // 
+            this.txtMaxGen.Location = new System.Drawing.Point(8, 260);
+            this.txtMaxGen.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMaxGen.Name = "txtMaxGen";
+            this.txtMaxGen.Size = new System.Drawing.Size(63, 22);
+            this.txtMaxGen.TabIndex = 58;
+            this.txtMaxGen.Text = "500";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(75, 328);
+            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(113, 17);
+            this.label24.TabIndex = 65;
+            this.label24.Text = "Test Porcentage";
+            // 
+            // txtTestPorcentage
+            // 
+            this.txtTestPorcentage.Location = new System.Drawing.Point(8, 324);
+            this.txtTestPorcentage.Margin = new System.Windows.Forms.Padding(4);
+            this.txtTestPorcentage.Name = "txtTestPorcentage";
+            this.txtTestPorcentage.Size = new System.Drawing.Size(63, 22);
+            this.txtTestPorcentage.TabIndex = 62;
+            this.txtTestPorcentage.Text = "0.15";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1359,7 +1427,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
-            this.Text = "SharpNEAT";
+            this.Text = "EasyChange";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
@@ -1455,7 +1523,6 @@
         private System.Windows.Forms.TextBox txtStatsTotalOffspringCount;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox txtParamInterspeciesMating;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.TextBox txtParamOffspringCrossover;
         private System.Windows.Forms.Label label26;
@@ -1507,5 +1574,12 @@
         private System.Windows.Forms.ToolStripMenuItem genomeFitnessDistributionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem genomeComplexityDistributionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.TextBox txtParamInterspeciesMating;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.TextBox txtSavePeriod;
+        private System.Windows.Forms.TextBox txtMaxGen;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox txtTestPorcentage;
     }
 }

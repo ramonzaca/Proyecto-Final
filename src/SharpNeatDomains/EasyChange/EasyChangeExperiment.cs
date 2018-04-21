@@ -74,6 +74,7 @@ namespace SharpNeat.Domains.EasyChange
             {
                 return _seed;
             }
+            set { _seed = value; }
         }
 
         public int SavePeriod
@@ -82,6 +83,19 @@ namespace SharpNeat.Domains.EasyChange
             {
                 return _savePeriod;
             }
+            set { _savePeriod = value; }
+        }
+      
+        public int MaxGen
+        {
+            get { return _maxGen; }
+            set { _maxGen = value; }
+        }
+
+        public double TestPorcentage
+        {
+            get { return _testPorcentage; }
+            set { _testPorcentage = value; }
         }
 
         public EasyChangeDataLoader DataLoader

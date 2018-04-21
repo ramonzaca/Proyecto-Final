@@ -41,7 +41,7 @@ namespace SharpNeatGUI
 
         #region Instance Fields [General]
 
-        IGuiNeatExperiment _selectedExperiment;
+        EasyChangeExperiment _selectedExperiment;
         IGenomeFactory<NeatGenome> _genomeFactory;
         List<NeatGenome> _genomeList;
         NeatEvolutionAlgorithm<NeatGenome> _ea;
@@ -115,7 +115,7 @@ namespace SharpNeatGUI
 
             Assembly assembly = Assembly.LoadFrom(expInfo.AssemblyPath);
             // TODO: Handle non-gui experiments.
-            _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as IGuiNeatExperiment;
+            _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as EasyChangeExperiment;
             _selectedExperiment.Initialize(expInfo.Name, expInfo.XmlConfig);
 
             // Load cmb
@@ -142,7 +142,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                EasyChangeExperiment experiment = (EasyChangeExperiment)GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Se reinicializa el dataloader del experimento con el nuevo path
                 experiment.DataLoader.Initialize(((string) ((ListItem)cmbExperiments.SelectedItem).Data), experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);
@@ -172,7 +172,7 @@ namespace SharpNeatGUI
                 return;
             }
 
-            INeatExperiment experiment = GetSelectedExperiment();
+            EasyChangeExperiment experiment = GetSelectedExperiment();
             if(null != experiment) {
                 MessageBox.Show(experiment.Description);
             }
@@ -181,7 +181,7 @@ namespace SharpNeatGUI
         private void btnLoadDomainDefaults_Click(object sender, EventArgs e)
         {
             // Dump the experiment's default parameters into the GUI.
-            INeatExperiment experiment = GetSelectedExperiment();
+            EasyChangeExperiment experiment = GetSelectedExperiment();
             txtParamPopulationSize.Text = experiment.DefaultPopulationSize.ToString();
 
             NeatEvolutionAlgorithmParameters eaParams = experiment.NeatEvolutionAlgorithmParameters;
@@ -200,7 +200,7 @@ namespace SharpNeatGUI
             txtParamMutateDeleteConnection.Text = ngParams.DeleteConnectionMutationProbability.ToString();
         }
 
-        private IGuiNeatExperiment GetSelectedExperiment()
+        private EasyChangeExperiment GetSelectedExperiment()
         {
            return _selectedExperiment;
         }
@@ -222,7 +222,7 @@ namespace SharpNeatGUI
                 return;
             }
 
-            INeatExperiment experiment = GetSelectedExperiment();
+            EasyChangeExperiment experiment = GetSelectedExperiment();
             experiment.NeatGenomeParameters.InitialInterconnectionsProportion = initConnProportion.Value;
 
             // Create a genome factory appropriate for the experiment.
@@ -334,6 +334,9 @@ namespace SharpNeatGUI
             ngParams.AddNodeMutationProbability = ParseDouble(txtParamMutateAddNode, ngParams.AddNodeMutationProbability);
             ngParams.AddConnectionMutationProbability = ParseDouble(txtParamMutateAddConnection, ngParams.AddConnectionMutationProbability);
             ngParams.DeleteConnectionMutationProbability = ParseDouble(txtParamMutateDeleteConnection, ngParams.DeleteConnectionMutationProbability);
+            _selectedExperiment.MaxGen = ParseInt(txtMaxGen, _selectedExperiment.MaxGen);
+            _selectedExperiment.TestPorcentage = ParseDouble(txtTestPorcentage, _selectedExperiment.TestPorcentage) / 100;
+            _selectedExperiment.SavePeriod = ParseInt(txtSavePeriod, _selectedExperiment.SavePeriod);
         }
 
         #endregion
@@ -397,6 +400,9 @@ namespace SharpNeatGUI
             txtParamMutateAddNode.Enabled = true;
             txtParamMutateAddConnection.Enabled = true;
             txtParamMutateDeleteConnection.Enabled = true;
+            txtMaxGen.Enabled = true;
+            txtSavePeriod.Enabled= true;
+            txtTestPorcentage.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -439,6 +445,10 @@ namespace SharpNeatGUI
             txtParamMutateAddNode.Enabled = true;
             txtParamMutateAddConnection.Enabled = true;
             txtParamMutateDeleteConnection.Enabled = true;
+            txtMaxGen.Enabled = true;
+            txtSavePeriod.Enabled = true;
+            txtTestPorcentage.Enabled = true;
+
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -485,6 +495,10 @@ namespace SharpNeatGUI
             txtParamMutateAddNode.Enabled = false;
             txtParamMutateAddConnection.Enabled = false;
             txtParamMutateDeleteConnection.Enabled = false;
+            txtMaxGen.Enabled = false;
+            txtSavePeriod.Enabled = false;
+            txtTestPorcentage.Enabled = false;
+
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -530,6 +544,10 @@ namespace SharpNeatGUI
             txtParamMutateAddNode.Enabled = false;
             txtParamMutateAddConnection.Enabled = false;
             txtParamMutateDeleteConnection.Enabled = false;
+            txtMaxGen.Enabled = false;
+            txtSavePeriod.Enabled = false;
+            txtTestPorcentage.Enabled = false;
+  
 
             // Logging to file.
             gbxLogging.Enabled = false;
@@ -617,7 +635,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                INeatExperiment experiment = GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Load population of genomes from file.
                 List<NeatGenome> genomeList;
@@ -658,7 +676,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                INeatExperiment experiment = GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Load genome from file.
                 List<NeatGenome> genomeList;
@@ -699,7 +717,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                INeatExperiment experiment = GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Load genome from file.
                 List<NeatGenome> genomeList;
@@ -734,7 +752,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                INeatExperiment experiment = GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Save genomes to xml file.
                 using(XmlWriter xw = XmlWriter.Create(popFilePath, _xwSettings))
@@ -758,7 +776,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                INeatExperiment experiment = GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Save genome to xml file.
                 using(XmlWriter xw = XmlWriter.Create(filePath, _xwSettings))
@@ -784,7 +802,7 @@ namespace SharpNeatGUI
             try
             {
                 // Get the currently selected experiment.
-                EasyChangeExperiment experiment = (EasyChangeExperiment) GetSelectedExperiment();
+                EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Se reinicializa el dataloader del experimento con el nuevo path
                 experiment.DataLoader.Initialize(filePath, experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);                
@@ -803,7 +821,7 @@ namespace SharpNeatGUI
 
         private void bestGenomeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IGuiNeatExperiment experiment = GetSelectedExperiment();
+            EasyChangeExperiment experiment = GetSelectedExperiment();
             AbstractGenomeView genomeView = experiment.CreateGenomeView();
             if(null == genomeView) {
                 return;
@@ -829,7 +847,7 @@ namespace SharpNeatGUI
 
         private void problemDomainToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IGuiNeatExperiment experiment = GetSelectedExperiment();
+            EasyChangeExperiment experiment = GetSelectedExperiment();
             AbstractDomainView domainView = experiment.CreateDomainView();
             if(null == domainView) {
                 return;
@@ -1533,7 +1551,7 @@ namespace SharpNeatGUI
                                                         txtFileBaseName.Text, _champGenomeFitness, DateTime.Now);
 
                         // Get the currently selected experiment.
-                        INeatExperiment experiment = GetSelectedExperiment();
+                        EasyChangeExperiment experiment = GetSelectedExperiment();
 
                         // Save genome to xml file.
                         using (XmlWriter xw = XmlWriter.Create(filename, _xwSettings))
@@ -1563,15 +1581,15 @@ namespace SharpNeatGUI
                 _logFileWriter.Flush();
             }
             // Get the currently selected experiment.
-            INeatExperiment exp = GetSelectedExperiment();
+            EasyChangeExperiment exp = GetSelectedExperiment();
 
             //Save Population (Funciona cuando le pinta)
-            if (_ea.CurrentGeneration % ((EasyChangeExperiment)exp).SavePeriod== 0 && _ea.CurrentGeneration > 0)
+            if ((_ea.CurrentGeneration % exp.SavePeriod) == 0  && _ea.CurrentGeneration > 0)
             {
                
                 NeatAlgorithmStats stats = _ea.Statistics;
                 string file = string.Format(_filenameNumberFormatter, "../../../Poblaciones/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
-                                                _ea.GenomeList.Count, ((EasyChangeExperiment)exp).Seed, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
+                                                _ea.GenomeList.Count, exp.Seed, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
 
                 // Save genomes to xml file.
                 using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))
