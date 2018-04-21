@@ -129,11 +129,17 @@ namespace SharpNeat.Domains.EasyChange
         // Obtiene el la información del dataset y lo devuleve como una lista de doubles
         public static List<double[]> loadDataset(string jsonPath = @"")
         {
-
             List<double[]> valuesFROMcsv = new List<double[]>();
-            string currentAssemblyDirectoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string filesPath = currentAssemblyDirectoryName + "/../../../Data/" + jsonPath;
-
+            int count = jsonPath.Split('\\').Length;
+            string filesPath;
+            if (jsonPath.Split('\\').Length > 1) {
+                filesPath = jsonPath;
+            }
+            else { 
+            
+                string currentAssemblyDirectoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                filesPath = currentAssemblyDirectoryName + "/../../../Data/" + jsonPath;
+            }
             int lineCount = 0;
 
             StreamReader reader = File.OpenText(filesPath);
@@ -220,7 +226,6 @@ namespace SharpNeat.Domains.EasyChange
                 moleculeCaracteristics[n] = value;
             }
         }
-
 
     }
 }

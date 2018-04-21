@@ -113,6 +113,7 @@
             this.txtParamOffspringAsexual = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPopulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSeedGenomeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSeedGenomesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -954,7 +955,6 @@
             this.txtParamNumberOfSpecies.Size = new System.Drawing.Size(63, 22);
             this.txtParamNumberOfSpecies.TabIndex = 56;
             this.txtParamNumberOfSpecies.Text = "40";
-            
             // 
             // label4
             // 
@@ -1073,6 +1073,7 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
             this.loadPopulationToolStripMenuItem,
             this.loadSeedGenomeToolStripMenuItem,
             this.loadSeedGenomesToolStripMenuItem,
@@ -1082,6 +1083,13 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(220, 26);
+            this.toolStripMenuItem1.Text = "Load Dataset";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // loadPopulationToolStripMenuItem
             // 
@@ -1498,5 +1506,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem genomeFitnessDistributionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem genomeComplexityDistributionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

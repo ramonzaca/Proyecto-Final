@@ -746,6 +746,30 @@ namespace SharpNeatGUI
             }
         }
 
+        // Load Dataset
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            string filePath = SelectFileToOpen("Load dataset", ".csv", "(*.csv)|*.csv");
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            try
+            {
+                // Get the currently selected experiment.
+                EasyChangeExperiment experiment = (EasyChangeExperiment) GetSelectedExperiment();
+
+                // Se reinicializa el dataloader del experimento con el nuevo path
+                experiment.DataLoader.Initialize(filePath, experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);                
+                
+                UpdateGuiState();
+            }
+            catch (Exception ex)
+            {
+                __log.ErrorFormat("Error loading dataset. Error message [{0}]", ex.Message);
+            }
+        }
         #endregion
 
         #region GUI Wiring [Menu Bar - Views]
@@ -1778,8 +1802,9 @@ namespace SharpNeatGUI
             return colorList.ToArray();
         }
 
+
         #endregion
 
-  
+
     }
 }

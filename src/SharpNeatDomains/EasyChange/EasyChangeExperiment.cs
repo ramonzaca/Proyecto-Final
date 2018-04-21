@@ -48,6 +48,10 @@ namespace SharpNeat.Domains.EasyChange
         double _testPorcentage;
         int _savePeriod;
         int _seed;
+        string _datasetPath;
+        bool _normalizeData;
+        int _normalizeRange;
+
 
 
 
@@ -63,6 +67,7 @@ namespace SharpNeat.Domains.EasyChange
 
         #endregion
 
+        #region Gets
         public int Seed
         {
             get
@@ -79,6 +84,30 @@ namespace SharpNeat.Domains.EasyChange
             }
         }
 
+        public EasyChangeDataLoader DataLoader
+        {
+            get
+            {
+                return _dataLoader;
+            }
+        }
+
+        public bool NormalizeData
+        {
+            get
+            {
+                return _normalizeData;
+            }
+        }
+
+        public int NormalizeRange
+        {
+            get
+            {
+                return _normalizeRange;
+            }
+        }
+        #endregion
 
         #region INeatExperiment
 
@@ -141,6 +170,8 @@ namespace SharpNeat.Domains.EasyChange
             get { return _neatGenomeParams; }
         }
 
+
+
         /// <summary>
         /// Initialize the experiment with some optional XML configuration data.
         /// </summary>
@@ -155,10 +186,13 @@ namespace SharpNeat.Domains.EasyChange
             _description = XmlUtils.TryGetValueAsString(xmlConfig, "Description");
             _parallelOptions = ExperimentUtils.ReadParallelOptions(xmlConfig);
             _seed = XmlUtils.GetValueAsInt(xmlConfig, "Seed");
+            _datasetPath = XmlUtils.TryGetValueAsString(xmlConfig, "DatasetPath");
+            _normalizeData = XmlUtils.GetValueAsBool(xmlConfig, "NormalizeData");
+            _normalizeRange = XmlUtils.GetValueAsInt(xmlConfig, "NormalizeRange");
             _dataLoader = new EasyChangeDataLoader();
-            _dataLoader.Initialize( XmlUtils.TryGetValueAsString(xmlConfig, "DatasetPath"),
-                                    XmlUtils.GetValueAsBool(xmlConfig,"NormalizeData"),
-                                    XmlUtils.GetValueAsInt(xmlConfig,"NormalizeRange"),
+            _dataLoader.Initialize( _datasetPath,
+                                    _normalizeData,
+                                    _normalizeRange,
                                     _seed);
             _eaParams = new NeatEvolutionAlgorithmParameters();
             _eaParams.SpecieCount = _specieCount;
