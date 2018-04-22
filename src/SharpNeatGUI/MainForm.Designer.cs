@@ -86,6 +86,10 @@
             this.btnExperimentInfo = new System.Windows.Forms.Button();
             this.cmbExperiments = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label30 = new System.Windows.Forms.Label();
+            this.txtNormalizeRange = new System.Windows.Forms.TextBox();
+            this.label29 = new System.Windows.Forms.Label();
+            this.cmbNormalizeData = new System.Windows.Forms.ComboBox();
             this.gbxNeatGenomeParameters = new System.Windows.Forms.GroupBox();
             this.txtParamConnectionWeightRange = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -98,6 +102,12 @@
             this.txtParamMutateAddNode = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
             this.gbxEAParameters = new System.Windows.Forms.GroupBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.txtTestPorcentage = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.txtSavePeriod = new System.Windows.Forms.TextBox();
+            this.txtMaxGen = new System.Windows.Forms.TextBox();
             this.label21 = new System.Windows.Forms.Label();
             this.txtParamNumberOfSpecies = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -147,12 +157,8 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.txtSavePeriod = new System.Windows.Forms.TextBox();
-            this.txtMaxGen = new System.Windows.Forms.TextBox();
-            this.label24 = new System.Windows.Forms.Label();
-            this.txtTestPorcentage = new System.Windows.Forms.TextBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.txtSeed = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -796,6 +802,10 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label30);
+            this.tabPage2.Controls.Add(this.txtNormalizeRange);
+            this.tabPage2.Controls.Add(this.label29);
+            this.tabPage2.Controls.Add(this.cmbNormalizeData);
             this.tabPage2.Controls.Add(this.gbxNeatGenomeParameters);
             this.tabPage2.Controls.Add(this.gbxEAParameters);
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
@@ -806,6 +816,44 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Page 2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label30
+            // 
+            this.label30.Location = new System.Drawing.Point(429, 284);
+            this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(203, 20);
+            this.label30.TabIndex = 56;
+            this.label30.Text = "Normalize Range";
+            // 
+            // txtNormalizeRange
+            // 
+            this.txtNormalizeRange.Location = new System.Drawing.Point(360, 280);
+            this.txtNormalizeRange.Margin = new System.Windows.Forms.Padding(4);
+            this.txtNormalizeRange.Name = "txtNormalizeRange";
+            this.txtNormalizeRange.Size = new System.Drawing.Size(63, 22);
+            this.txtNormalizeRange.TabIndex = 55;
+            this.txtNormalizeRange.Text = "1";
+            // 
+            // label29
+            // 
+            this.label29.Location = new System.Drawing.Point(429, 252);
+            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(203, 20);
+            this.label29.TabIndex = 54;
+            this.label29.Text = "Normalize Data";
+            // 
+            // cmbNormalizeData
+            // 
+            this.cmbNormalizeData.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbNormalizeData.DropDownWidth = 300;
+            this.cmbNormalizeData.Location = new System.Drawing.Point(360, 248);
+            this.cmbNormalizeData.Margin = new System.Windows.Forms.Padding(4);
+            this.cmbNormalizeData.Name = "cmbNormalizeData";
+            this.cmbNormalizeData.Size = new System.Drawing.Size(63, 24);
+            this.cmbNormalizeData.TabIndex = 53;
+            this.cmbNormalizeData.SelectedIndexChanged += new System.EventHandler(this.cmbNormalizeData_SelectedIndexChanged);
             // 
             // gbxNeatGenomeParameters
             // 
@@ -823,7 +871,7 @@
             this.gbxNeatGenomeParameters.Margin = new System.Windows.Forms.Padding(4);
             this.gbxNeatGenomeParameters.Name = "gbxNeatGenomeParameters";
             this.gbxNeatGenomeParameters.Padding = new System.Windows.Forms.Padding(4);
-            this.gbxNeatGenomeParameters.Size = new System.Drawing.Size(308, 244);
+            this.gbxNeatGenomeParameters.Size = new System.Drawing.Size(308, 204);
             this.gbxNeatGenomeParameters.TabIndex = 52;
             this.gbxNeatGenomeParameters.TabStop = false;
             this.gbxNeatGenomeParameters.Text = "NEAT Genome Parameters";
@@ -921,6 +969,8 @@
             // gbxEAParameters
             // 
             this.gbxEAParameters.BackColor = System.Drawing.Color.Transparent;
+            this.gbxEAParameters.Controls.Add(this.label31);
+            this.gbxEAParameters.Controls.Add(this.txtSeed);
             this.gbxEAParameters.Controls.Add(this.label24);
             this.gbxEAParameters.Controls.Add(this.txtTestPorcentage);
             this.gbxEAParameters.Controls.Add(this.label22);
@@ -944,10 +994,66 @@
             this.gbxEAParameters.Margin = new System.Windows.Forms.Padding(4);
             this.gbxEAParameters.Name = "gbxEAParameters";
             this.gbxEAParameters.Padding = new System.Windows.Forms.Padding(4);
-            this.gbxEAParameters.Size = new System.Drawing.Size(329, 360);
+            this.gbxEAParameters.Size = new System.Drawing.Size(329, 399);
             this.gbxEAParameters.TabIndex = 16;
             this.gbxEAParameters.TabStop = false;
             this.gbxEAParameters.Text = "Evolution Algorithm Parameters";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(75, 328);
+            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(113, 17);
+            this.label24.TabIndex = 65;
+            this.label24.Text = "Test Porcentage";
+            // 
+            // txtTestPorcentage
+            // 
+            this.txtTestPorcentage.Location = new System.Drawing.Point(8, 324);
+            this.txtTestPorcentage.Margin = new System.Windows.Forms.Padding(4);
+            this.txtTestPorcentage.Name = "txtTestPorcentage";
+            this.txtTestPorcentage.Size = new System.Drawing.Size(63, 22);
+            this.txtTestPorcentage.TabIndex = 62;
+            this.txtTestPorcentage.Text = "0.15";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(75, 264);
+            this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(154, 17);
+            this.label22.TabIndex = 61;
+            this.label22.Text = "Amount of Generations";
+            // 
+            // label23
+            // 
+            this.label23.Location = new System.Drawing.Point(75, 296);
+            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(160, 20);
+            this.label23.TabIndex = 60;
+            this.label23.Text = "Save Period";
+            // 
+            // txtSavePeriod
+            // 
+            this.txtSavePeriod.Location = new System.Drawing.Point(8, 292);
+            this.txtSavePeriod.Margin = new System.Windows.Forms.Padding(4);
+            this.txtSavePeriod.Name = "txtSavePeriod";
+            this.txtSavePeriod.Size = new System.Drawing.Size(63, 22);
+            this.txtSavePeriod.TabIndex = 59;
+            this.txtSavePeriod.Text = "50";
+            // 
+            // txtMaxGen
+            // 
+            this.txtMaxGen.Location = new System.Drawing.Point(8, 260);
+            this.txtMaxGen.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMaxGen.Name = "txtMaxGen";
+            this.txtMaxGen.Size = new System.Drawing.Size(63, 22);
+            this.txtMaxGen.TabIndex = 58;
+            this.txtMaxGen.Text = "500";
             // 
             // label21
             // 
@@ -1361,61 +1467,24 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
-            // label22
+            // label31
             // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(75, 264);
-            this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(154, 17);
-            this.label22.TabIndex = 61;
-            this.label22.Text = "Amount of Generations";
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(75, 361);
+            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(89, 17);
+            this.label31.TabIndex = 67;
+            this.label31.Text = "Shuffle Seed";
             // 
-            // label23
+            // txtSeed
             // 
-            this.label23.Location = new System.Drawing.Point(75, 296);
-            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(160, 20);
-            this.label23.TabIndex = 60;
-            this.label23.Text = "Save Period";
-            // 
-            // txtSavePeriod
-            // 
-            this.txtSavePeriod.Location = new System.Drawing.Point(8, 292);
-            this.txtSavePeriod.Margin = new System.Windows.Forms.Padding(4);
-            this.txtSavePeriod.Name = "txtSavePeriod";
-            this.txtSavePeriod.Size = new System.Drawing.Size(63, 22);
-            this.txtSavePeriod.TabIndex = 59;
-            this.txtSavePeriod.Text = "50";
-            // 
-            // txtMaxGen
-            // 
-            this.txtMaxGen.Location = new System.Drawing.Point(8, 260);
-            this.txtMaxGen.Margin = new System.Windows.Forms.Padding(4);
-            this.txtMaxGen.Name = "txtMaxGen";
-            this.txtMaxGen.Size = new System.Drawing.Size(63, 22);
-            this.txtMaxGen.TabIndex = 58;
-            this.txtMaxGen.Text = "500";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(75, 328);
-            this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(113, 17);
-            this.label24.TabIndex = 65;
-            this.label24.Text = "Test Porcentage";
-            // 
-            // txtTestPorcentage
-            // 
-            this.txtTestPorcentage.Location = new System.Drawing.Point(8, 324);
-            this.txtTestPorcentage.Margin = new System.Windows.Forms.Padding(4);
-            this.txtTestPorcentage.Name = "txtTestPorcentage";
-            this.txtTestPorcentage.Size = new System.Drawing.Size(63, 22);
-            this.txtTestPorcentage.TabIndex = 62;
-            this.txtTestPorcentage.Text = "0.15";
+            this.txtSeed.Location = new System.Drawing.Point(8, 357);
+            this.txtSeed.Margin = new System.Windows.Forms.Padding(4);
+            this.txtSeed.Name = "txtSeed";
+            this.txtSeed.Size = new System.Drawing.Size(63, 22);
+            this.txtSeed.TabIndex = 66;
+            this.txtSeed.Text = "8787";
             // 
             // MainForm
             // 
@@ -1445,6 +1514,7 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.gbxNeatGenomeParameters.ResumeLayout(false);
             this.gbxNeatGenomeParameters.PerformLayout();
             this.gbxEAParameters.ResumeLayout(false);
@@ -1581,5 +1651,11 @@
         private System.Windows.Forms.TextBox txtMaxGen;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.TextBox txtTestPorcentage;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.TextBox txtNormalizeRange;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.ComboBox cmbNormalizeData;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.TextBox txtSeed;
     }
 }

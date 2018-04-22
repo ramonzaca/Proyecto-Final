@@ -68,6 +68,12 @@ namespace SharpNeat.Domains.EasyChange
         #endregion
 
         #region Gets
+
+        public string DatasetPath
+        {
+            get { return _datasetPath; }
+            set { _datasetPath = value; }
+        }
         public int Seed
         {
             get
@@ -112,6 +118,7 @@ namespace SharpNeat.Domains.EasyChange
             {
                 return _normalizeData;
             }
+            set { _normalizeData = value; }
         }
 
         public int NormalizeRange
@@ -120,6 +127,7 @@ namespace SharpNeat.Domains.EasyChange
             {
                 return _normalizeRange;
             }
+            set { _normalizeRange = value; }
         }
         #endregion
 
@@ -204,10 +212,6 @@ namespace SharpNeat.Domains.EasyChange
             _normalizeData = XmlUtils.GetValueAsBool(xmlConfig, "NormalizeData");
             _normalizeRange = XmlUtils.GetValueAsInt(xmlConfig, "NormalizeRange");
             _dataLoader = new EasyChangeDataLoader();
-            _dataLoader.Initialize( _datasetPath,
-                                    _normalizeData,
-                                    _normalizeRange,
-                                    _seed);
             _eaParams = new NeatEvolutionAlgorithmParameters();
             _eaParams.SpecieCount = _specieCount;
             _neatGenomeParams = new NeatGenomeParameters();
@@ -252,6 +256,11 @@ namespace SharpNeat.Domains.EasyChange
         /// </summary>
         public IGenomeFactory<NeatGenome> CreateGenomeFactory()
         {
+            // Inicializo el dataloader
+            _dataLoader.Initialize(_datasetPath,
+                                    _normalizeData,
+                                    _normalizeRange,
+                                    _seed);
             return new NeatGenomeFactory(InputCount, OutputCount, _neatGenomeParams);
         }
 

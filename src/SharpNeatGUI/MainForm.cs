@@ -129,6 +129,10 @@ namespace SharpNeatGUI
             cmbExperiments.SelectedIndex = 0;
             btnLoadDomainDefaults_Click(null, null);
 
+            cmbNormalizeData.Items.Add(new ListItem(string.Empty, "True", true));
+            cmbNormalizeData.Items.Add(new ListItem(string.Empty, "False", false));
+            cmbNormalizeData.SelectedIndex = 0;
+
 
 
         }
@@ -145,7 +149,7 @@ namespace SharpNeatGUI
                 EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Se reinicializa el dataloader del experimento con el nuevo path
-                experiment.DataLoader.Initialize(((string) ((ListItem)cmbExperiments.SelectedItem).Data), experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);
+                experiment.DatasetPath = ((string) ((ListItem)cmbExperiments.SelectedItem).Data);
                 UpdateGuiState();
             }
             catch (Exception ex)
@@ -337,6 +341,9 @@ namespace SharpNeatGUI
             _selectedExperiment.MaxGen = ParseInt(txtMaxGen, _selectedExperiment.MaxGen);
             _selectedExperiment.TestPorcentage = ParseDouble(txtTestPorcentage, _selectedExperiment.TestPorcentage) / 100;
             _selectedExperiment.SavePeriod = ParseInt(txtSavePeriod, _selectedExperiment.SavePeriod);
+            _selectedExperiment.NormalizeData = (bool)((ListItem)cmbNormalizeData.SelectedItem).Data;
+            _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
+            _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
         }
 
         #endregion
@@ -403,6 +410,12 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = true;
             txtSavePeriod.Enabled= true;
             txtTestPorcentage.Enabled = true;
+            cmbNormalizeData.Enabled = true;
+            if (cmbNormalizeData.SelectedIndex == 0)
+                txtNormalizeRange.Enabled = true;
+            else
+                txtNormalizeRange.Enabled = false;
+            txtSeed.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -448,6 +461,11 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = true;
             txtSavePeriod.Enabled = true;
             txtTestPorcentage.Enabled = true;
+            cmbNormalizeData.Enabled = false;
+            txtNormalizeRange.Enabled = false;
+            txtSeed.Enabled = false;
+
+
 
 
             // Logging to file.
@@ -498,6 +516,9 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = false;
             txtSavePeriod.Enabled = false;
             txtTestPorcentage.Enabled = false;
+            cmbNormalizeData.Enabled = false;
+            txtNormalizeRange.Enabled = false;
+            txtSeed.Enabled = false;
 
 
             // Logging to file.
@@ -547,7 +568,10 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = false;
             txtSavePeriod.Enabled = false;
             txtTestPorcentage.Enabled = false;
-  
+            cmbNormalizeData.Enabled = false;
+            txtNormalizeRange.Enabled = false;
+            txtSeed.Enabled = false;
+
 
             // Logging to file.
             gbxLogging.Enabled = false;
@@ -805,7 +829,7 @@ namespace SharpNeatGUI
                 EasyChangeExperiment experiment = GetSelectedExperiment();
 
                 // Se reinicializa el dataloader del experimento con el nuevo path
-                experiment.DataLoader.Initialize(filePath, experiment.NormalizeData, experiment.NormalizeRange, experiment.Seed);                
+                experiment.DatasetPath = filePath;            
                 cmbExperiments.Items.Add(new ListItem(string.Empty, filePath.Split('\\')[filePath.Split('\\').Length - 1], filePath));
                 cmbExperiments.SelectedIndex = cmbExperiments.Items.Count - 1 ;
                 UpdateGuiState();
@@ -818,6 +842,11 @@ namespace SharpNeatGUI
         #endregion
 
         #region GUI Wiring [Menu Bar - Views]
+
+        private void cmbNormalizeData_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateGuiState();
+        }
 
         private void bestGenomeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1848,8 +1877,9 @@ namespace SharpNeatGUI
         }
 
 
+
         #endregion
 
-
+        
     }
 }
