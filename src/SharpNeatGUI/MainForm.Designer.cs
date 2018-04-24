@@ -86,6 +86,8 @@
             this.btnExperimentInfo = new System.Windows.Forms.Button();
             this.cmbExperiments = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label33 = new System.Windows.Forms.Label();
+            this.cmbFitnessFnc = new System.Windows.Forms.ComboBox();
             this.label30 = new System.Windows.Forms.Label();
             this.txtNormalizeRange = new System.Windows.Forms.TextBox();
             this.label29 = new System.Windows.Forms.Label();
@@ -159,8 +161,8 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label33 = new System.Windows.Forms.Label();
-            this.cmbFitnessFnc = new System.Windows.Forms.ComboBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnEvaluate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -176,6 +178,7 @@
             this.gbxNeatGenomeParameters.SuspendLayout();
             this.gbxEAParameters.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -205,6 +208,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 28);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
@@ -820,6 +824,26 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Page 2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label33
+            // 
+            this.label33.Location = new System.Drawing.Point(429, 331);
+            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(203, 20);
+            this.label33.TabIndex = 58;
+            this.label33.Text = "Fitness Function";
+            // 
+            // cmbFitnessFnc
+            // 
+            this.cmbFitnessFnc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFitnessFnc.DropDownWidth = 300;
+            this.cmbFitnessFnc.Location = new System.Drawing.Point(360, 327);
+            this.cmbFitnessFnc.Margin = new System.Windows.Forms.Padding(4);
+            this.cmbFitnessFnc.Name = "cmbFitnessFnc";
+            this.cmbFitnessFnc.Size = new System.Drawing.Size(63, 24);
+            this.cmbFitnessFnc.TabIndex = 57;
+            this.cmbFitnessFnc.SelectedIndexChanged += new System.EventHandler(this.cmbFitnessFnc_SelectedIndexChanged);
             // 
             // label30
             // 
@@ -1490,25 +1514,27 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
-            // label33
+            // tabPage3
             // 
-            this.label33.Location = new System.Drawing.Point(429, 331);
-            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(203, 20);
-            this.label33.TabIndex = 58;
-            this.label33.Text = "Fitness Function";
+            this.tabPage3.Controls.Add(this.btnEvaluate);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(691, 414);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Page3";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // cmbFitnessFnc
+            // btnEvaluate
             // 
-            this.cmbFitnessFnc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFitnessFnc.DropDownWidth = 300;
-            this.cmbFitnessFnc.Location = new System.Drawing.Point(360, 327);
-            this.cmbFitnessFnc.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbFitnessFnc.Name = "cmbFitnessFnc";
-            this.cmbFitnessFnc.Size = new System.Drawing.Size(63, 24);
-            this.cmbFitnessFnc.TabIndex = 57;
-            this.cmbFitnessFnc.SelectedIndexChanged += new System.EventHandler(this.cmbFitnessFnc_SelectedIndexChanged);
+            this.btnEvaluate.Enabled = false;
+            this.btnEvaluate.Location = new System.Drawing.Point(299, 186);
+            this.btnEvaluate.Margin = new System.Windows.Forms.Padding(4);
+            this.btnEvaluate.Name = "btnEvaluate";
+            this.btnEvaluate.Size = new System.Drawing.Size(93, 43);
+            this.btnEvaluate.TabIndex = 1;
+            this.btnEvaluate.Text = "Evaluate";
+            this.btnEvaluate.Click += new System.EventHandler(this.btnEvaluate_Click);
             // 
             // MainForm
             // 
@@ -1545,6 +1571,7 @@
             this.gbxEAParameters.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1683,5 +1710,7 @@
         private System.Windows.Forms.TextBox txtSeed;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.ComboBox cmbFitnessFnc;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button btnEvaluate;
     }
 }

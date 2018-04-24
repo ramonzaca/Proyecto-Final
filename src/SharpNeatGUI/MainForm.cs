@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -421,6 +422,7 @@ namespace SharpNeatGUI
                 txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = true;
             cmbFitnessFnc.Enabled = true;
+            btnEvaluate.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -451,7 +453,7 @@ namespace SharpNeatGUI
             btnSearchReset.Enabled = true;
 
             // Parameter fields enabled (apart from population creation params)
-            txtParamNumberOfSpecies.Enabled = false;
+            txtParamNumberOfSpecies.Enabled = true;
             txtParamPopulationSize.Enabled = false;
             txtParamInitialConnectionProportion.Enabled = false;
             txtParamElitismProportion.Enabled = true;
@@ -471,6 +473,7 @@ namespace SharpNeatGUI
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = true;
+            btnEvaluate.Enabled = false;
 
 
 
@@ -528,6 +531,7 @@ namespace SharpNeatGUI
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = false;
+            btnEvaluate.Enabled = false;
 
 
             // Logging to file.
@@ -1913,6 +1917,125 @@ namespace SharpNeatGUI
             exp.FitnessFunction = cmbFitnessFnc.SelectedIndex;
             UpdateGuiState();
             
+        }
+
+        private void btnEvaluate_Click(object sender, EventArgs e)
+        {
+            EasyChangeExperiment exp = GetSelectedExperiment();
+            List<NeatGenome> genomeList;
+            string genomeFilePath = "../../../Champions/Fit81,04_151040_24042018.gnm.xml";
+            string predictionFilePath = "salida.csv";
+            string inputFilePath = "../../../Data/dataset Todeschini - RB.csv";
+            using (XmlReader xr = XmlReader.Create(genomeFilePath))
+            {
+                genomeList = exp.LoadPopulation(xr);
+            }
+
+            if (genomeList.Count == 0)
+            {
+                __log.WarnFormat("No genome loaded from file [{0}]", genomeFilePath);
+                return;
+            }
+
+            
+            string line;
+            List<double[]> valuesFROMcsv = new List<double[]>();
+            StreamReader reader = File.OpenText(inputFilePath);
+            while ((line = reader.ReadLine()) != null)
+            {
+
+                string[] items = line.Split(',');
+
+                double[] itemsAsDouble = new double[items.Length-1];
+                // Se convierten los valores uno a uno para evitar problemas en el modo en que estan guardados los datos 
+                for (int i = 0; i < items.Length - 1; i++)
+                {
+                    if (items[i].Count(f => f == '.') > 1)
+                        itemsAsDouble[i] = Double.Parse(items[i]) / 1000;
+                    else
+                        itemsAsDouble[i] = Double.Parse(items[i], CultureInfo.InvariantCulture);
+                }
+                valuesFROMcsv.Add(itemsAsDouble);
+
+                
+            }
+
+            double[] secArray = new double[valuesFROMcsv.Count];
+            for (int i = 0; i < valuesFROMcsv[0].Length; i++) // No normalizar la salida
+            {
+                for (int j = 0; j < valuesFROMcsv.Count; j++)
+                {
+                    secArray[j] = valuesFROMcsv[j][i];
+                }
+                var normalizedArray = NormalizeData(secArray, -1, 1);
+                for (int j = 0; j < valuesFROMcsv.Count; j++)
+                {
+                    valuesFROMcsv[j][i] = normalizedArray[j];
+                }
+
+            }
+            double[] predictions = new double[valuesFROMcsv.Count];
+            StreamWriter writer = new StreamWriter(predictionFilePath);
+            IGenomeDecoder<NeatGenome, IBlackBox>  decoder = exp.CreateGenomeDecoder();
+
+            int result;
+            for(int i = 0; i< valuesFROMcsv.Count; i++)
+            {
+                result = Predict(decoder.Decode(genomeList[0]), valuesFROMcsv[i]);
+                if (result == 1)
+                    writer.WriteLine("True");
+                else if(result == 0)
+                    writer.WriteLine("False");
+                else
+                    writer.WriteLine("Inconclusive");
+            }
+            writer.Close(); 
+            
+        }
+
+        private int Predict(IBlackBox box, double[] inputs)
+        {
+            double output;
+            ISignalArray inputArr = box.InputSignalArray;
+            ISignalArray outputArr = box.OutputSignalArray;
+            
+            for (int j = 0; j < inputs.Length; j++)
+            {
+                inputArr[j] = inputs[j];
+            }
+
+            // Activate the black box.
+            box.Activate();
+            if (!box.IsStateValid)
+            {   // Any black box that gets itself into an invalid state is unlikely to be
+                // any good, so let's just exit here.
+                return -1;
+            }
+
+            // Read output signal.
+            output = outputArr[0];
+
+            // Reset black box state ready for next test case.
+            box.ResetState();
+
+
+            if (output >= 0.5)
+                return 1;
+            else
+                return 0;
+        }
+
+        //Función secundaria de normalizado
+        private static double[] NormalizeData(IEnumerable<double> data, int min, int max)
+        {
+            double dataMax = data.Max();
+            double dataMin = data.Min();
+            double range = dataMax - dataMin;
+
+            return data
+                .Select(d => (d - dataMin) / range)
+                .Select(n => ((1 - n) * min + n * max))
+                .ToArray();
         }
     }
 }
