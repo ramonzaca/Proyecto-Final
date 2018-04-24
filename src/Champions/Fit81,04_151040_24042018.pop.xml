@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <ActivationFunctions>
+    <Fn id="0" name="LeakyReLU" prob="1" />
+  </ActivationFunctions>
+  <Networks>
+    <Network id="110113" birthGen="20" fitness="81.036834924965888">
+      <Nodes>
+        <Node type="bias" id="0" />
+        <Node type="in" id="1" />
+        <Node type="in" id="2" />
+        <Node type="in" id="3" />
+        <Node type="in" id="4" />
+        <Node type="in" id="5" />
+        <Node type="in" id="6" />
+        <Node type="in" id="7" />
+        <Node type="in" id="8" />
+        <Node type="in" id="9" />
+        <Node type="in" id="10" />
+        <Node type="in" id="11" />
+        <Node type="in" id="12" />
+        <Node type="in" id="13" />
+        <Node type="in" id="14" />
+        <Node type="in" id="15" />
+        <Node type="in" id="16" />
+        <Node type="in" id="17" />
+        <Node type="in" id="18" />
+        <Node type="in" id="19" />
+        <Node type="in" id="20" />
+        <Node type="in" id="21" />
+        <Node type="in" id="22" />
+        <Node type="in" id="23" />
+        <Node type="in" id="24" />
+        <Node type="in" id="25" />
+        <Node type="in" id="26" />
+        <Node type="in" id="27" />
+        <Node type="in" id="28" />
+        <Node type="in" id="29" />
+        <Node type="in" id="30" />
+        <Node type="in" id="31" />
+        <Node type="in" id="32" />
+        <Node type="in" id="33" />
+        <Node type="in" id="34" />
+        <Node type="in" id="35" />
+        <Node type="in" id="36" />
+        <Node type="in" id="37" />
+        <Node type="in" id="38" />
+        <Node type="in" id="39" />
+        <Node type="in" id="40" />
+        <Node type="in" id="41" />
+        <Node type="out" id="42" />
+        <Node type="hid" id="466" />
+      </Nodes>
+      <Connections>
+        <Con id="44" src="1" tgt="42" wght="-4.6033933939866731" />
+        <Con id="56" src="13" tgt="42" wght="-4.6881361282430589" />
+        <Con id="57" src="14" tgt="42" wght="4.9137987300050954" />
+        <Con id="65" src="22" tgt="42" wght="-3.5457573528401554" />
+        <Con id="81" src="38" tgt="42" wght="-0.68253485020250082" />
+        <Con id="148" src="35" tgt="42" wght="0.0496628837659955" />
+        <Con id="149" src="10" tgt="42" wght="0.045380515628494322" />
+        <Con id="151" src="17" tgt="42" wght="0.026995630096644165" />
+        <Con id="173" src="18" tgt="42" wght="-4.210411652456969" />
+        <Con id="467" src="21" tgt="466" wght="-0.024015035332956441" />
+        <Con id="468" src="466" tgt="42" wght="5" />
+      </Connections>
+    </Network>
+  </Networks>
+</Root>

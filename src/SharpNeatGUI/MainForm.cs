@@ -1587,7 +1587,7 @@ namespace SharpNeatGUI
                     if (chkFileSaveGenomeOnImprovement.Checked && champGenome.EvaluationInfo.Fitness > _champGenomeFitness)
                     {
                         _champGenomeFitness = champGenome.EvaluationInfo.Fitness;
-                        string filename = string.Format(_filenameNumberFormatter, "{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
+                        string filename = string.Format(_filenameNumberFormatter, "../../../Champions/{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
                                                         txtFileBaseName.Text, _champGenomeFitness, DateTime.Now);
 
                         // Get the currently selected experiment.
@@ -1635,6 +1635,21 @@ namespace SharpNeatGUI
                 using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))
                 {
                     exp.SavePopulation(xw, _genomeList);
+                }
+            }
+
+            //Save best Genome
+            if (_ea.CurrentGeneration == exp.MaxGen)
+            {
+                NeatGenome champGenome = _ea.CurrentChampGenome;
+                NeatAlgorithmStats stats = _ea.Statistics;
+                string file = string.Format(_filenameNumberFormatter, "../../../Champions/Fit{0:0.00}_{1:HHmmss_ddMMyyyy}.gnm.xml",
+                                                stats._maxFitness, DateTime.Now);
+
+                // Save genome to xml file.
+                using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))
+                {
+                    exp.SavePopulation(xw, new NeatGenome[] { champGenome });
                 }
             }
         }
