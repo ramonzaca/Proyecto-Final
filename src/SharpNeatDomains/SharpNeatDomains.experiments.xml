@@ -21,11 +21,9 @@
 		  <SavePeriod>500</SavePeriod>
 		  <TestPorcentage>15</TestPorcentage>
 		<Description>
-EasyChange does something totally unexpected with a random behavior. 
-Nobody knows how it got here. 
-Some say it from out of space. 
-Others don't. 
-I want to believe.
+EasyChange is a classification tool.
+A population is created in accordance to a domain, specifying the amount of inputs to the network.
+The results on the testing porcentage will be given after the amount of Max Generations if completed.
 		</Description>
     </Config>
   </Experiment>

@@ -102,6 +102,8 @@
             this.txtParamMutateAddNode = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
             this.gbxEAParameters = new System.Windows.Forms.GroupBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.txtSeed = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
             this.txtTestPorcentage = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
@@ -157,8 +159,8 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label31 = new System.Windows.Forms.Label();
-            this.txtSeed = new System.Windows.Forms.TextBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.cmbFitnessFnc = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -765,7 +767,7 @@
             this.groupBox5.Size = new System.Drawing.Size(312, 85);
             this.groupBox5.TabIndex = 15;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Domain / Experiment";
+            this.groupBox5.Text = "Datasets";
             // 
             // btnLoadDomainDefaults
             // 
@@ -775,7 +777,7 @@
             this.btnLoadDomainDefaults.Name = "btnLoadDomainDefaults";
             this.btnLoadDomainDefaults.Size = new System.Drawing.Size(265, 30);
             this.btnLoadDomainDefaults.TabIndex = 48;
-            this.btnLoadDomainDefaults.Text = "Load Domain Default Parameters";
+            this.btnLoadDomainDefaults.Text = "Load Default Parameters";
             this.btnLoadDomainDefaults.Click += new System.EventHandler(this.btnLoadDomainDefaults_Click);
             // 
             // btnExperimentInfo
@@ -802,6 +804,8 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label33);
+            this.tabPage2.Controls.Add(this.cmbFitnessFnc);
             this.tabPage2.Controls.Add(this.label30);
             this.tabPage2.Controls.Add(this.txtNormalizeRange);
             this.tabPage2.Controls.Add(this.label29);
@@ -998,6 +1002,25 @@
             this.gbxEAParameters.TabIndex = 16;
             this.gbxEAParameters.TabStop = false;
             this.gbxEAParameters.Text = "Evolution Algorithm Parameters";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(75, 361);
+            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(89, 17);
+            this.label31.TabIndex = 67;
+            this.label31.Text = "Shuffle Seed";
+            // 
+            // txtSeed
+            // 
+            this.txtSeed.Location = new System.Drawing.Point(8, 357);
+            this.txtSeed.Margin = new System.Windows.Forms.Padding(4);
+            this.txtSeed.Name = "txtSeed";
+            this.txtSeed.Size = new System.Drawing.Size(63, 22);
+            this.txtSeed.TabIndex = 66;
+            this.txtSeed.Text = "8787";
             // 
             // label24
             // 
@@ -1467,24 +1490,25 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
-            // label31
+            // label33
             // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(75, 361);
-            this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(89, 17);
-            this.label31.TabIndex = 67;
-            this.label31.Text = "Shuffle Seed";
+            this.label33.Location = new System.Drawing.Point(429, 331);
+            this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(203, 20);
+            this.label33.TabIndex = 58;
+            this.label33.Text = "Fitness Function";
             // 
-            // txtSeed
+            // cmbFitnessFnc
             // 
-            this.txtSeed.Location = new System.Drawing.Point(8, 357);
-            this.txtSeed.Margin = new System.Windows.Forms.Padding(4);
-            this.txtSeed.Name = "txtSeed";
-            this.txtSeed.Size = new System.Drawing.Size(63, 22);
-            this.txtSeed.TabIndex = 66;
-            this.txtSeed.Text = "8787";
+            this.cmbFitnessFnc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFitnessFnc.DropDownWidth = 300;
+            this.cmbFitnessFnc.Location = new System.Drawing.Point(360, 327);
+            this.cmbFitnessFnc.Margin = new System.Windows.Forms.Padding(4);
+            this.cmbFitnessFnc.Name = "cmbFitnessFnc";
+            this.cmbFitnessFnc.Size = new System.Drawing.Size(63, 24);
+            this.cmbFitnessFnc.TabIndex = 57;
+            this.cmbFitnessFnc.SelectedIndexChanged += new System.EventHandler(this.cmbFitnessFnc_SelectedIndexChanged);
             // 
             // MainForm
             // 
@@ -1657,5 +1681,7 @@
         private System.Windows.Forms.ComboBox cmbNormalizeData;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.TextBox txtSeed;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.ComboBox cmbFitnessFnc;
     }
 }

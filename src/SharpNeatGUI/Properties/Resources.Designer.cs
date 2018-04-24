@@ -70,7 +70,7 @@ namespace SharpNeatGUI.Properties {
         /// </summary>
         internal static string About {
             get {
-                return ResourceManager.GetString("About", resourceCulture);
+                return "The present project has been developed by Agustín Dye as a fork version of the SharpNEAT implementation. \n\n" + ResourceManager.GetString("About", resourceCulture);
             }
         }
         

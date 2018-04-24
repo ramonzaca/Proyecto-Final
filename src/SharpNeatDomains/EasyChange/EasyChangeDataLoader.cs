@@ -14,9 +14,9 @@ namespace SharpNeat.Domains.EasyChange
         static List<double[]> moleculeCaracteristics;
         static int _totalImageCount;
         static int _pixelCount; // Todos las moléculas tienen la misma cantidad de características
-        static double[] allIdentifiers;
-        static List<double[]> allImages;
-        static bool[] testClases;
+        static double[] _allIdentifiers;
+        static List<double[]> _allImages;
+        static bool[] _testClases;
 
         #region Properties
 
@@ -48,7 +48,7 @@ namespace SharpNeat.Domains.EasyChange
         {
             get
             {
-                return allIdentifiers;
+                return _allIdentifiers;
             }
         }
 
@@ -56,7 +56,7 @@ namespace SharpNeat.Domains.EasyChange
         {
             get
             {
-                return allImages;
+                return _allImages;
             }
         }
 
@@ -64,7 +64,7 @@ namespace SharpNeat.Domains.EasyChange
         {
             get
             {
-                return testClases;
+                return _testClases;
             }
         }
 
@@ -80,8 +80,8 @@ namespace SharpNeat.Domains.EasyChange
             //double[] debuj = GetRange(moleculeCaracteristics);
             _totalImageCount = moleculeCaracteristics.Count;
             _pixelCount = moleculeCaracteristics[0].Length - 1;
-            allIdentifiers = new double[_totalImageCount];
-            allImages = new List<double[]>();
+            _allIdentifiers = new double[_totalImageCount];
+            _allImages = new List<double[]>();
            
             
 
@@ -110,20 +110,20 @@ namespace SharpNeat.Domains.EasyChange
             for (int i = 0; i < moleculeCaracteristics.Count; i++)
             {
                 // El valor de la propiedad a calcular se encuentra al final del arreglo
-                allIdentifiers[i] = moleculeCaracteristics[i][_pixelCount];
+                _allIdentifiers[i] = moleculeCaracteristics[i][_pixelCount];
 
                 // Se evalúan todas las propiedades
-                allImages.Add(moleculeCaracteristics[i].Take(_pixelCount).ToArray());
+                _allImages.Add(moleculeCaracteristics[i].Take(_pixelCount).ToArray());
             }
 
             //Para analisis de clases
 
-            testClases = new bool[allIdentifiers.Length];
-            for (int p = 0; p < allIdentifiers.Length; p++)
-                if (allIdentifiers[p] == 1.0)
-                    testClases[p] = true;
+            _testClases = new bool[_allIdentifiers.Length];
+            for (int p = 0; p < _allIdentifiers.Length; p++)
+                if (_allIdentifiers[p] == 1.0)
+                    _testClases[p] = true;
                 else
-                    testClases[p] = false;
+                    _testClases[p] = false;
         }
 
         // Obtiene el la información del dataset y lo devuleve como una lista de doubles
@@ -149,24 +149,17 @@ namespace SharpNeat.Domains.EasyChange
                 
                 string[] items = line.Split(',');
 
-                if (lineCount > 0)
+                double[] itemsAsDouble = new double[items.Length];
+                // Se convierten los valores uno a uno para evitar problemas en el modo en que estan guardados los datos 
+                for (int i = 0; i < items.Length; i++)
                 {
-
-                    double[] itemsAsDouble = new double[items.Length - 1 ];
-                    // Se convierten los valores uno a uno para evitar problemas en el modo en que estan guardados los datos 
-                    for (int i = 0; i < items.Length - 1 ; i++)
-                    {
-                        if (items[i].Count(f => f == '.') > 1)
-                            itemsAsDouble[i] = Double.Parse(items[i]) / 1000;
-                        else if (items[i].SequenceEqual("RB"))
-                            itemsAsDouble[i] = 1.0;
-                        else if (items[i].SequenceEqual("NRB"))
-                            itemsAsDouble[i] = 0.0;
-                        else
-                            itemsAsDouble[i] = Double.Parse(items[i], CultureInfo.InvariantCulture);
-                    }
-                    valuesFROMcsv.Add(itemsAsDouble);
+                    if (items[i].Count(f => f == '.') > 1)
+                        itemsAsDouble[i] = Double.Parse(items[i]) / 1000;
+                    else
+                        itemsAsDouble[i] = Double.Parse(items[i], CultureInfo.InvariantCulture);
                 }
+                valuesFROMcsv.Add(itemsAsDouble);
+                
                 lineCount++;
             }
                     

@@ -31,33 +31,35 @@ namespace SharpNeat.Domains.EasyChange
         bool _stopConditionSatisfied;
 
         NeatEvolutionAlgorithm<NeatGenome> _ea;
-        bool trainingMode;
+        bool _trainingMode;
         static int _maxGen;
-        static List<double[]> moleculeCaracteristics;
+        static List<double[]> _moleculeCaracteristics;
         static int _totalImageCount;
         static int _pixelCount; // Todos las moléculas tienen la misma cantidad de características
-        static double[] allIdentifiers;
-        static List<double[]> allImages;
-        static bool[] testClases;
-        static int separation;
+        static double[] _allIdentifiers;
+        static List<double[]> _allImages;
+        static bool[] _testClases;
+        static int _separation;
+        static int _fitnessFunction;
 
         #region IPhenomeEvaluator<IBlackBox> Members
 
-        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage)
+        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage, int fitnessFunction)
         {
             
             _ea = ea;
-            trainingMode = true;
+            _trainingMode = true;
             _maxGen = maxGen;
             _stopConditionSatisfied = false;
-            moleculeCaracteristics = dataLoader.MoleculeCaracteristics;
+            _moleculeCaracteristics = dataLoader.MoleculeCaracteristics;
             _totalImageCount = dataLoader.TotalImageCount;
             _pixelCount = dataLoader.PixelCount;
-            allIdentifiers = dataLoader.AllIdentifiers;
-            allImages = dataLoader.AllImages;
-            testClases = dataLoader.TestClases;
+            _allIdentifiers = dataLoader.AllIdentifiers;
+            _allImages = dataLoader.AllImages;
+            _testClases = dataLoader.TestClases;
             double temp = _totalImageCount * (1 - testPorcentage);
-            separation = (int)temp;
+            _separation = (int)temp;
+            _fitnessFunction = fitnessFunction;
 
         }
         /// <summary>
@@ -79,29 +81,49 @@ namespace SharpNeat.Domains.EasyChange
         }
 
         /// <summary>
-        /// Evaluate the provided IBlackBox against the Binary 6-Multiplexer problem domain and return
+        /// Evaluate the provided IBlackBox against the choosen fitness function and return
         /// its fitness score.
         /// </summary>
         public FitnessInfo Evaluate(IBlackBox box)
+        {
+            if (_fitnessFunction == 0)
+                return Accuracy(box);
+            else
+                return EscalatedAccuracy(box);
+            
+        }
+
+        /// <summary>
+        /// Reset the internal state of the evaluation scheme if any exists.
+        /// Note. The classification problem domain has no internal state. This method does nothing.
+        /// </summary>
+        public void Reset()
+        {
+        }
+
+        #endregion
+
+        private FitnessInfo Accuracy(IBlackBox box)
         {
             double fitness = 0.0;
             double output;
             ISignalArray inputArr = box.InputSignalArray;
             ISignalArray outputArr = box.OutputSignalArray;
             _evalCount++;
-     
-            if(_ea.CurrentGeneration == _maxGen + 1)
+
+            if (_ea.CurrentGeneration == _maxGen + 1)
             {
-                trainingMode = false;
+                _trainingMode = false;
             }
 
-            if (trainingMode) {
-                
-                for (int i = 0; i < separation; i++)
+            if (_trainingMode)
+            {
+
+                for (int i = 0; i < _separation; i++)
                 {
                     for (int j = 0; j < _pixelCount; j++)
                     {
-                        inputArr[j] = allImages[i][j];
+                        inputArr[j] = _allImages[i][j];
                     }
 
                     // Activate the black box.
@@ -115,7 +137,7 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && testClases[i] || output < 0.5 && !testClases[i])
+                    if (output >= 0.5 && _testClases[i] || output < 0.5 && !_testClases[i])
                         fitness += 1.0;
 
 
@@ -123,24 +145,24 @@ namespace SharpNeat.Domains.EasyChange
                     box.ResetState();
                 }
 
-                fitness /= separation;
+                fitness /= _separation;
                 fitness *= 100;
                 return new FitnessInfo(fitness, fitness);
             }
             else
             {
-              if (_ea.CurrentGeneration == _maxGen + 2)
+                if (_ea.CurrentGeneration == _maxGen + 2)
                 {
                     _stopConditionSatisfied = true;
                     return FitnessInfo.Zero;
                 }
-              else
+                else
                 {
-                    for (int t = separation; t < _totalImageCount; t++)
+                    for (int t = _separation; t < _totalImageCount; t++)
                     {
                         for (int j = 0; j < _pixelCount; j++)
                         {
-                            inputArr[j] = allImages[t][j];
+                            inputArr[j] = _allImages[t][j];
                         }
 
                         // Activate the black box.
@@ -154,31 +176,127 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && testClases[t] || output < 0.5 && !testClases[t])
+                        if (output >= 0.5 && _testClases[t] || output < 0.5 && !_testClases[t])
                             fitness += 1.0;
-                 
+
 
                         // Reset black box state ready for next test case.
                         box.ResetState();
                     }
 
-                    fitness /= (_totalImageCount - separation);
+                    fitness /= (_totalImageCount - _separation);
                     fitness *= 100;
                     return new FitnessInfo(fitness, fitness);
                 }
             }
         }
 
-        /// <summary>
-        /// Reset the internal state of the evaluation scheme if any exists.
-        /// Note. The Binary Multiplexer problem domain has no internal state. This method does nothing.
-        /// </summary>
-        public void Reset()
+        private FitnessInfo EscalatedAccuracy(IBlackBox box)
         {
+            double fitness = 0.0;
+            double output;
+            ISignalArray inputArr = box.InputSignalArray;
+            ISignalArray outputArr = box.OutputSignalArray;
+            _evalCount++;
+            int positives = 0;
+            int negatives = 0;
+
+            if (_ea.CurrentGeneration == _maxGen + 1)
+            {
+                _trainingMode = false;
+            }
+
+            if (_trainingMode) {
+
+                
+                for (int o = 0; o < _separation; o++)
+                    if (_testClases[o])
+                        positives++;
+                    else
+                        negatives++;
+                        
+                
+                for (int i = 0; i < _separation; i++)
+                {
+                    for (int j = 0; j < _pixelCount; j++)
+                    {
+                        inputArr[j] = _allImages[i][j];
+                    }
+
+                    // Activate the black box.
+                    box.Activate();
+                    if (!box.IsStateValid)
+                    {   // Any black box that gets itself into an invalid state is unlikely to be
+                        // any good, so let's just exit here.
+                        return FitnessInfo.Zero;
+                    }
+
+                    // Read output signal.
+                    output = outputArr[0];
+
+                    if (output >= 0.5 && _testClases[i])
+                        fitness += 1.0/positives;
+                    if (output < 0.5 && !_testClases[i])
+                        fitness += 1.0/negatives;
+                              
+
+
+                    // Reset black box state ready for next test case.
+                    box.ResetState();
+                }
+
+                //fitness /= separation;
+                fitness *= 50;
+                return new FitnessInfo(fitness, fitness);
+            }
+            else
+            {
+              if (_ea.CurrentGeneration == _maxGen + 2)
+                {
+                    _stopConditionSatisfied = true;
+                    return FitnessInfo.Zero;
+                }
+              else
+                {
+                    for (int p = _separation; p < _totalImageCount; p++)
+                        if (_testClases[p])
+                            positives++;
+                        else
+                            negatives++;
+
+                    for (int t = _separation; t < _totalImageCount; t++)
+                    {
+                        for (int j = 0; j < _pixelCount; j++)
+                        {
+                            inputArr[j] = _allImages[t][j];
+                        }
+
+                        // Activate the black box.
+                        box.Activate();
+                        if (!box.IsStateValid)
+                        {   // Any black box that gets itself into an invalid state is unlikely to be
+                            // any good, so let's just exit here.
+                            return FitnessInfo.Zero;
+                        }
+
+                        // Read output signal.
+                        output = outputArr[0];
+
+                        if (output >= 0.5 && _testClases[t])
+                            fitness += 1.0 / positives;
+                        if (output < 0.5 && !_testClases[t])
+                            fitness += 1.0 / negatives;
+
+
+                        // Reset black box state ready for next test case.
+                        box.ResetState();
+                    }
+
+                    //fitness /= (_totalImageCount - separation);
+                    fitness *= 50;
+                    return new FitnessInfo(fitness, fitness);
+                }
+            }
         }
-
-        #endregion
-
-        
     }
 }

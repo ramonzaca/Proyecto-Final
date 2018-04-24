@@ -51,6 +51,7 @@ namespace SharpNeat.Domains.EasyChange
         string _datasetPath;
         bool _normalizeData;
         int _normalizeRange;
+        int _fitnessFunction;
 
 
 
@@ -68,6 +69,12 @@ namespace SharpNeat.Domains.EasyChange
         #endregion
 
         #region Gets
+
+        public int FitnessFunction
+        {
+            get { return _fitnessFunction; }
+            set { _fitnessFunction = value; }
+        }
 
         public string DatasetPath
         {
@@ -257,7 +264,7 @@ namespace SharpNeat.Domains.EasyChange
         public IGenomeFactory<NeatGenome> CreateGenomeFactory()
         {
             // Inicializo el dataloader
-            _dataLoader.Initialize(_datasetPath,
+            _dataLoader.Initialize( _datasetPath,
                                     _normalizeData,
                                     _normalizeRange,
                                     _seed);
@@ -310,7 +317,7 @@ namespace SharpNeat.Domains.EasyChange
             NeatEvolutionAlgorithm<NeatGenome> ea = new NeatEvolutionAlgorithm<NeatGenome>(_eaParams, speciationStrategy, complexityRegulationStrategy);
 
             // Create IBlackBox evaluator.
-            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader,_maxGen,_testPorcentage);
+            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader,_maxGen,_testPorcentage,_fitnessFunction);
 
             // Create genome decoder. Decodes to a neural network packaged with an activation scheme.
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder =  CreateGenomeDecoder();
@@ -348,5 +355,7 @@ namespace SharpNeat.Domains.EasyChange
         }
 		
         #endregion
+
+
     }
 }

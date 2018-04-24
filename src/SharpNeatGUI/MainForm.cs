@@ -28,6 +28,7 @@ using SharpNeat.Domains.EasyChange;
 using SharpNeat.EvolutionAlgorithms;
 using SharpNeat.EvolutionAlgorithms.ComplexityRegulation;
 using SharpNeat.Genomes.Neat;
+using SharpNeat.Phenomes;
 using SharpNeat.Utility;
 
 namespace SharpNeatGUI
@@ -133,7 +134,9 @@ namespace SharpNeatGUI
             cmbNormalizeData.Items.Add(new ListItem(string.Empty, "False", false));
             cmbNormalizeData.SelectedIndex = 0;
 
-
+            cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Accuracy", 0));
+            cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Escalated Accuracy", 1));
+            cmbFitnessFnc.SelectedIndex = 0;
 
         }
 
@@ -395,6 +398,7 @@ namespace SharpNeatGUI
             btnSearchReset.Enabled = false;
 
             // Parameter fields enabled.
+            txtParamNumberOfSpecies.Enabled = true;
             txtParamPopulationSize.Enabled = true;
             txtParamInitialConnectionProportion.Enabled = true;
             txtParamElitismProportion.Enabled = true;
@@ -416,6 +420,7 @@ namespace SharpNeatGUI
             else
                 txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = true;
+            cmbFitnessFnc.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -446,6 +451,7 @@ namespace SharpNeatGUI
             btnSearchReset.Enabled = true;
 
             // Parameter fields enabled (apart from population creation params)
+            txtParamNumberOfSpecies.Enabled = false;
             txtParamPopulationSize.Enabled = false;
             txtParamInitialConnectionProportion.Enabled = false;
             txtParamElitismProportion.Enabled = true;
@@ -464,6 +470,7 @@ namespace SharpNeatGUI
             cmbNormalizeData.Enabled = false;
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
+            cmbFitnessFnc.Enabled = true;
 
 
 
@@ -501,6 +508,7 @@ namespace SharpNeatGUI
             btnSearchReset.Enabled = true;
 
             // Parameter fields (disable).
+            txtParamNumberOfSpecies.Enabled = false;
             txtParamPopulationSize.Enabled = false;
             txtParamInitialConnectionProportion.Enabled = false;
             txtParamElitismProportion.Enabled = false;
@@ -519,6 +527,7 @@ namespace SharpNeatGUI
             cmbNormalizeData.Enabled = false;
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
+            cmbFitnessFnc.Enabled = false;
 
 
             // Logging to file.
@@ -553,6 +562,7 @@ namespace SharpNeatGUI
             btnSearchReset.Enabled = false;
 
             // Parameter fields (disable).
+            txtParamNumberOfSpecies.Enabled = false;
             txtParamPopulationSize.Enabled = false;
             txtParamInitialConnectionProportion.Enabled = false;
             txtParamElitismProportion.Enabled = false;
@@ -571,6 +581,7 @@ namespace SharpNeatGUI
             cmbNormalizeData.Enabled = false;
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
+            cmbFitnessFnc.Enabled = false;
 
 
             // Logging to file.
@@ -1878,8 +1889,15 @@ namespace SharpNeatGUI
 
 
 
+
         #endregion
 
-        
+        private void cmbFitnessFnc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            EasyChangeExperiment exp = GetSelectedExperiment();
+            exp.FitnessFunction = cmbFitnessFnc.SelectedIndex;
+            UpdateGuiState();
+            
+        }
     }
 }
