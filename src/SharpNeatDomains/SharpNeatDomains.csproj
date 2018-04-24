@@ -65,6 +65,7 @@
     <Compile Include="AbstractDomainView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="EasyChange\EasyChangePredictor.cs" />
     <Compile Include="EasyChange\EasyChangeDataLoader.cs" />
     <Compile Include="EasyChange\EasyChangeEvaluator.cs" />
     <Compile Include="EasyChange\EasyChangeExperiment.cs" />

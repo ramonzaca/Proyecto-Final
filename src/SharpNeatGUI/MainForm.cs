@@ -399,6 +399,8 @@ namespace SharpNeatGUI
             btnSearchReset.Enabled = false;
 
             // Parameter fields enabled.
+            txtLoadGenomePath.Enabled = false;
+            txtLoadDatasetPath.Enabled = false;
             txtParamNumberOfSpecies.Enabled = true;
             txtParamPopulationSize.Enabled = true;
             txtParamInitialConnectionProportion.Enabled = true;
@@ -423,6 +425,9 @@ namespace SharpNeatGUI
             txtSeed.Enabled = true;
             cmbFitnessFnc.Enabled = true;
             btnEvaluate.Enabled = true;
+            btnLoadDataset.Enabled = true;
+            btnLoadGenome.Enabled = true;
+            txtPredictionFilePath.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -474,6 +479,9 @@ namespace SharpNeatGUI
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = true;
             btnEvaluate.Enabled = false;
+            btnLoadDataset.Enabled = false;
+            btnLoadGenome.Enabled = false;
+            txtPredictionFilePath.Enabled = false;
 
 
 
@@ -532,6 +540,9 @@ namespace SharpNeatGUI
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = false;
             btnEvaluate.Enabled = false;
+            btnLoadDataset.Enabled = false;
+            btnLoadGenome.Enabled = false;
+            txtPredictionFilePath.Enabled = false;
 
 
             // Logging to file.
@@ -1923,24 +1934,21 @@ namespace SharpNeatGUI
         {
             EasyChangeExperiment exp = GetSelectedExperiment();
             List<NeatGenome> genomeList;
-            string genomeFilePath = "../../../Champions/Fit81,04_151040_24042018.gnm.xml";
-            string predictionFilePath = "salida.csv";
-            string inputFilePath = "../../../Data/dataset Todeschini - RB.csv";
-            using (XmlReader xr = XmlReader.Create(genomeFilePath))
+            using (XmlReader xr = XmlReader.Create(txtLoadGenomePath.Text))
             {
                 genomeList = exp.LoadPopulation(xr);
             }
 
             if (genomeList.Count == 0)
             {
-                __log.WarnFormat("No genome loaded from file [{0}]", genomeFilePath);
+                __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
                 return;
             }
 
             
             string line;
             List<double[]> valuesFROMcsv = new List<double[]>();
-            StreamReader reader = File.OpenText(inputFilePath);
+            StreamReader reader = File.OpenText(txtLoadDatasetPath.Text);
             while ((line = reader.ReadLine()) != null)
             {
 
@@ -1975,7 +1983,7 @@ namespace SharpNeatGUI
 
             }
             double[] predictions = new double[valuesFROMcsv.Count];
-            StreamWriter writer = new StreamWriter(predictionFilePath);
+            StreamWriter writer = new StreamWriter("../../../Predicciones/" + txtPredictionFilePath.Text);
             IGenomeDecoder<NeatGenome, IBlackBox>  decoder = exp.CreateGenomeDecoder();
 
             int result;
@@ -2036,6 +2044,26 @@ namespace SharpNeatGUI
                 .Select(d => (d - dataMin) / range)
                 .Select(n => ((1 - n) * min + n * max))
                 .ToArray();
+        }
+
+        private void btnLoadGenome_Click(object sender, EventArgs e)
+        {
+            string genFilePath = SelectFileToOpen("Load genome", "gnm.xml", "(*.gnm.xml)|*.gnm.xml");
+            if (string.IsNullOrEmpty(genFilePath))
+            {
+                return;
+            }
+            txtLoadGenomePath.Text = genFilePath;
+        }
+
+        private void btnLoadDataset_Click(object sender, EventArgs e)
+        {
+            string datasetFilePath = SelectFileToOpen("Load dataset", "csv", "(*.csv)|*.csv");
+            if (string.IsNullOrEmpty(datasetFilePath))
+            {
+                return;
+            }
+            txtLoadDatasetPath.Text = datasetFilePath;
         }
     }
 }

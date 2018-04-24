@@ -167,7 +167,7 @@ namespace SharpNeat.Domains.EasyChange
         }
 
         //Función secundaria de normalizado
-        private static double[] NormalizeData(IEnumerable<double> data, int min, int max)
+        public static double[] NormalizeData(IEnumerable<double> data, int min, int max)
         {
             double dataMax = data.Max();
             double dataMin = data.Min();
