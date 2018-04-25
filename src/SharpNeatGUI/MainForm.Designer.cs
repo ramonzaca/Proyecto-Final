@@ -86,12 +86,11 @@
             this.btnExperimentInfo = new System.Windows.Forms.Button();
             this.cmbExperiments = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.chBoxNormalizeData = new System.Windows.Forms.CheckBox();
             this.label33 = new System.Windows.Forms.Label();
             this.cmbFitnessFnc = new System.Windows.Forms.ComboBox();
             this.label30 = new System.Windows.Forms.Label();
             this.txtNormalizeRange = new System.Windows.Forms.TextBox();
-            this.label29 = new System.Windows.Forms.Label();
-            this.cmbNormalizeData = new System.Windows.Forms.ComboBox();
             this.gbxNeatGenomeParameters = new System.Windows.Forms.GroupBox();
             this.txtParamConnectionWeightRange = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -145,7 +144,6 @@
             this.saveBestGenomeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bestGenomeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.specieChampGenomesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.problemDomainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeSeriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -237,7 +235,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
             this.tabPage1.Size = new System.Drawing.Size(691, 414);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Page 1";
+            this.tabPage1.Text = "Controls";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // gbxGenomePopulation
@@ -815,12 +813,11 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.chBoxNormalizeData);
             this.tabPage2.Controls.Add(this.label33);
             this.tabPage2.Controls.Add(this.cmbFitnessFnc);
             this.tabPage2.Controls.Add(this.label30);
             this.tabPage2.Controls.Add(this.txtNormalizeRange);
-            this.tabPage2.Controls.Add(this.label29);
-            this.tabPage2.Controls.Add(this.cmbNormalizeData);
             this.tabPage2.Controls.Add(this.gbxNeatGenomeParameters);
             this.tabPage2.Controls.Add(this.gbxEAParameters);
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
@@ -829,15 +826,28 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
             this.tabPage2.Size = new System.Drawing.Size(691, 414);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Page 2";
+            this.tabPage2.Text = "Parameters";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // chBoxNormalizeData
+            // 
+            this.chBoxNormalizeData.AutoSize = true;
+            this.chBoxNormalizeData.Checked = true;
+            this.chBoxNormalizeData.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chBoxNormalizeData.Location = new System.Drawing.Point(360, 252);
+            this.chBoxNormalizeData.Name = "chBoxNormalizeData";
+            this.chBoxNormalizeData.Size = new System.Drawing.Size(127, 21);
+            this.chBoxNormalizeData.TabIndex = 59;
+            this.chBoxNormalizeData.Text = "Normalize Data";
+            this.chBoxNormalizeData.UseVisualStyleBackColor = true;
+            this.chBoxNormalizeData.CheckedChanged += new System.EventHandler(this.chBoxNormalizeData_CheckedChanged);
             // 
             // label33
             // 
-            this.label33.Location = new System.Drawing.Point(429, 331);
+            this.label33.Location = new System.Drawing.Point(552, 330);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(203, 20);
+            this.label33.Size = new System.Drawing.Size(118, 20);
             this.label33.TabIndex = 58;
             this.label33.Text = "Fitness Function";
             // 
@@ -848,7 +858,7 @@
             this.cmbFitnessFnc.Location = new System.Drawing.Point(360, 327);
             this.cmbFitnessFnc.Margin = new System.Windows.Forms.Padding(4);
             this.cmbFitnessFnc.Name = "cmbFitnessFnc";
-            this.cmbFitnessFnc.Size = new System.Drawing.Size(63, 24);
+            this.cmbFitnessFnc.Size = new System.Drawing.Size(184, 24);
             this.cmbFitnessFnc.TabIndex = 57;
             this.cmbFitnessFnc.SelectedIndexChanged += new System.EventHandler(this.cmbFitnessFnc_SelectedIndexChanged);
             // 
@@ -869,26 +879,6 @@
             this.txtNormalizeRange.Size = new System.Drawing.Size(63, 22);
             this.txtNormalizeRange.TabIndex = 55;
             this.txtNormalizeRange.Text = "1";
-            // 
-            // label29
-            // 
-            this.label29.Location = new System.Drawing.Point(429, 252);
-            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(203, 20);
-            this.label29.TabIndex = 54;
-            this.label29.Text = "Normalize Data";
-            // 
-            // cmbNormalizeData
-            // 
-            this.cmbNormalizeData.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbNormalizeData.DropDownWidth = 300;
-            this.cmbNormalizeData.Location = new System.Drawing.Point(360, 248);
-            this.cmbNormalizeData.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbNormalizeData.Name = "cmbNormalizeData";
-            this.cmbNormalizeData.Size = new System.Drawing.Size(63, 24);
-            this.cmbNormalizeData.TabIndex = 53;
-            this.cmbNormalizeData.SelectedIndexChanged += new System.EventHandler(this.cmbNormalizeData_SelectedIndexChanged);
             // 
             // gbxNeatGenomeParameters
             // 
@@ -1243,7 +1233,7 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(691, 414);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Page3";
+            this.tabPage3.Text = "Evaluation";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // label37
@@ -1257,18 +1247,18 @@
             // 
             // txtPredictionFilePath
             // 
-            this.txtPredictionFilePath.Location = new System.Drawing.Point(26, 213);
+            this.txtPredictionFilePath.Location = new System.Drawing.Point(127, 213);
             this.txtPredictionFilePath.Margin = new System.Windows.Forms.Padding(4);
             this.txtPredictionFilePath.Name = "txtPredictionFilePath";
-            this.txtPredictionFilePath.Size = new System.Drawing.Size(335, 22);
+            this.txtPredictionFilePath.Size = new System.Drawing.Size(234, 22);
             this.txtPredictionFilePath.TabIndex = 57;
             // 
             // txtLoadDatasetPath
             // 
-            this.txtLoadDatasetPath.Location = new System.Drawing.Point(26, 168);
+            this.txtLoadDatasetPath.Location = new System.Drawing.Point(127, 168);
             this.txtLoadDatasetPath.Margin = new System.Windows.Forms.Padding(4);
             this.txtLoadDatasetPath.Name = "txtLoadDatasetPath";
-            this.txtLoadDatasetPath.Size = new System.Drawing.Size(335, 22);
+            this.txtLoadDatasetPath.Size = new System.Drawing.Size(234, 22);
             this.txtLoadDatasetPath.TabIndex = 55;
             // 
             // btnLoadDataset
@@ -1284,10 +1274,10 @@
             // 
             // txtLoadGenomePath
             // 
-            this.txtLoadGenomePath.Location = new System.Drawing.Point(26, 127);
+            this.txtLoadGenomePath.Location = new System.Drawing.Point(127, 127);
             this.txtLoadGenomePath.Margin = new System.Windows.Forms.Padding(4);
             this.txtLoadGenomePath.Name = "txtLoadGenomePath";
-            this.txtLoadGenomePath.Size = new System.Drawing.Size(335, 22);
+            this.txtLoadGenomePath.Size = new System.Drawing.Size(234, 22);
             this.txtLoadGenomePath.TabIndex = 53;
             // 
             // btnLoadGenome
@@ -1298,7 +1288,7 @@
             this.btnLoadGenome.Name = "btnLoadGenome";
             this.btnLoadGenome.Size = new System.Drawing.Size(168, 33);
             this.btnLoadGenome.TabIndex = 52;
-            this.btnLoadGenome.Text = "Load Genome";
+            this.btnLoadGenome.Text = "Load Gen/Pop";
             this.btnLoadGenome.Click += new System.EventHandler(this.btnLoadGenome_Click);
             // 
             // txtPredictionStatus
@@ -1310,7 +1300,7 @@
             this.txtPredictionStatus.Margin = new System.Windows.Forms.Padding(4);
             this.txtPredictionStatus.Name = "txtPredictionStatus";
             this.txtPredictionStatus.ReadOnly = true;
-            this.txtPredictionStatus.Size = new System.Drawing.Size(425, 23);
+            this.txtPredictionStatus.Size = new System.Drawing.Size(444, 23);
             this.txtPredictionStatus.TabIndex = 51;
             this.txtPredictionStatus.TabStop = false;
             this.txtPredictionStatus.Text = "Ready to begin";
@@ -1319,7 +1309,7 @@
             // btnEvaluate
             // 
             this.btnEvaluate.Enabled = false;
-            this.btnEvaluate.Location = new System.Drawing.Point(291, 285);
+            this.btnEvaluate.Location = new System.Drawing.Point(308, 280);
             this.btnEvaluate.Margin = new System.Windows.Forms.Padding(4);
             this.btnEvaluate.Name = "btnEvaluate";
             this.btnEvaluate.Size = new System.Drawing.Size(93, 43);
@@ -1408,7 +1398,6 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bestGenomeToolStripMenuItem,
-            this.specieChampGenomesToolStripMenuItem,
             this.problemDomainToolStripMenuItem,
             this.graphsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -1418,21 +1407,14 @@
             // bestGenomeToolStripMenuItem
             // 
             this.bestGenomeToolStripMenuItem.Name = "bestGenomeToolStripMenuItem";
-            this.bestGenomeToolStripMenuItem.Size = new System.Drawing.Size(245, 26);
+            this.bestGenomeToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.bestGenomeToolStripMenuItem.Text = "Best Genome";
             this.bestGenomeToolStripMenuItem.Click += new System.EventHandler(this.bestGenomeToolStripMenuItem_Click);
-            // 
-            // specieChampGenomesToolStripMenuItem
-            // 
-            this.specieChampGenomesToolStripMenuItem.Name = "specieChampGenomesToolStripMenuItem";
-            this.specieChampGenomesToolStripMenuItem.Size = new System.Drawing.Size(245, 26);
-            this.specieChampGenomesToolStripMenuItem.Text = "Specie Champ Genomes";
-            this.specieChampGenomesToolStripMenuItem.Visible = false;
             // 
             // problemDomainToolStripMenuItem
             // 
             this.problemDomainToolStripMenuItem.Name = "problemDomainToolStripMenuItem";
-            this.problemDomainToolStripMenuItem.Size = new System.Drawing.Size(245, 26);
+            this.problemDomainToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.problemDomainToolStripMenuItem.Text = "Problem Domain";
             this.problemDomainToolStripMenuItem.Click += new System.EventHandler(this.problemDomainToolStripMenuItem_Click);
             // 
@@ -1443,7 +1425,7 @@
             this.rankPlotsToolStripMenuItem,
             this.distributionPlotsToolStripMenuItem});
             this.graphsToolStripMenuItem.Name = "graphsToolStripMenuItem";
-            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(245, 26);
+            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
             this.graphsToolStripMenuItem.Text = "Graphs";
             // 
             // timeSeriesToolStripMenuItem
@@ -1754,7 +1736,6 @@
         private System.Windows.Forms.ToolStripMenuItem savePopulationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bestGenomeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem specieChampGenomesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem problemDomainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem graphsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeSeriesToolStripMenuItem;
@@ -1789,8 +1770,6 @@
         private System.Windows.Forms.TextBox txtTestPorcentage;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.TextBox txtNormalizeRange;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.ComboBox cmbNormalizeData;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.TextBox txtSeed;
         private System.Windows.Forms.Label label33;
@@ -1804,5 +1783,6 @@
         private System.Windows.Forms.TextBox txtLoadDatasetPath;
         private System.Windows.Forms.Button btnLoadDataset;
         private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.CheckBox chBoxNormalizeData;
     }
 }

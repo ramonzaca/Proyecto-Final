@@ -132,9 +132,6 @@ namespace SharpNeatGUI
             cmbExperiments.SelectedIndex = 0;
             btnLoadDomainDefaults_Click(null, null);
 
-            cmbNormalizeData.Items.Add(new ListItem(string.Empty, "True", true));
-            cmbNormalizeData.Items.Add(new ListItem(string.Empty, "False", false));
-            cmbNormalizeData.SelectedIndex = 0;
 
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Accuracy", 0));
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Escalated Accuracy", 1));
@@ -348,7 +345,7 @@ namespace SharpNeatGUI
             _selectedExperiment.MaxGen = ParseInt(txtMaxGen, _selectedExperiment.MaxGen);
             _selectedExperiment.TestPorcentage = ParseDouble(txtTestPorcentage, _selectedExperiment.TestPorcentage) / 100;
             _selectedExperiment.SavePeriod = ParseInt(txtSavePeriod, _selectedExperiment.SavePeriod);
-            _selectedExperiment.NormalizeData = (bool)((ListItem)cmbNormalizeData.SelectedItem).Data;
+            _selectedExperiment.NormalizeData = chBoxNormalizeData.Checked;
             _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
             _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
         }
@@ -420,11 +417,8 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = true;
             txtSavePeriod.Enabled= true;
             txtTestPorcentage.Enabled = true;
-            cmbNormalizeData.Enabled = true;
-            if (cmbNormalizeData.SelectedIndex == 0)
-                txtNormalizeRange.Enabled = true;
-            else
-                txtNormalizeRange.Enabled = false;
+            chBoxNormalizeData.Enabled = true;
+            txtNormalizeRange.Enabled = chBoxNormalizeData.Checked;
             txtSeed.Enabled = true;
             cmbFitnessFnc.Enabled = true;
             btnEvaluate.Enabled = true;
@@ -477,7 +471,7 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = true;
             txtSavePeriod.Enabled = true;
             txtTestPorcentage.Enabled = true;
-            cmbNormalizeData.Enabled = false;
+            chBoxNormalizeData.Enabled = false;
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = true;
@@ -538,7 +532,7 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = false;
             txtSavePeriod.Enabled = false;
             txtTestPorcentage.Enabled = false;
-            cmbNormalizeData.Enabled = false;
+            chBoxNormalizeData.Enabled = false;
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = false;
@@ -596,7 +590,7 @@ namespace SharpNeatGUI
             txtMaxGen.Enabled = false;
             txtSavePeriod.Enabled = false;
             txtTestPorcentage.Enabled = false;
-            cmbNormalizeData.Enabled = false;
+            chBoxNormalizeData.Enabled = false;
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = false;
@@ -872,7 +866,7 @@ namespace SharpNeatGUI
 
         #region GUI Wiring [Menu Bar - Views]
 
-        private void cmbNormalizeData_SelectedIndexChanged(object sender, EventArgs e)
+        private void chBoxNormalizeData_CheckedChanged(object sender, EventArgs e)
         {
             UpdateGuiState();
         }
@@ -1933,6 +1927,7 @@ namespace SharpNeatGUI
             
         }
 
+        #region GUI Wiring [Evaluation]
         private void btnEvaluate_Click(object sender, EventArgs e)
         {
             if (_predictor.StatusCompleted)
@@ -1995,17 +1990,15 @@ namespace SharpNeatGUI
 
                     }
                 }
-
-
-
+                
                 int result;
                 for (int i = 0; i < valuesFROMcsv.Count; i++)
                 {
-                    result = _predictor.Predict(genomeList[0], valuesFROMcsv[i]);
+                    result = _predictor.Predict(genomeList, valuesFROMcsv[i]);
                     if (result == 1)
-                        writer.WriteLine("True");
+                        writer.WriteLine("1");
                     else if (result == 0)
-                        writer.WriteLine("False");
+                        writer.WriteLine("0");
                     else
                         writer.WriteLine("Inconclusive");
                 }
@@ -2018,13 +2011,9 @@ namespace SharpNeatGUI
             }
         }
 
-        
-
- 
-
         private void btnLoadGenome_Click(object sender, EventArgs e)
         {
-            string genFilePath = SelectFileToOpen("Load genome", "gnm.xml", "(*.gnm.xml)|*.gnm.xml");
+            string genFilePath = SelectFileToOpen("Load genome or population", "gnm.xml | pop.xml", "(*.gnm.xml)|*.gnm.xml|(*.pop.xml)|*.pop.xml");
             if (string.IsNullOrEmpty(genFilePath))
             {
                 return;
@@ -2043,5 +2032,9 @@ namespace SharpNeatGUI
             _predictor.DatasetPath = datasetFilePath;
             txtLoadDatasetPath.Text = datasetFilePath.Split('\\').Last();
         }
+        #endregion
+
+
+
     }
 }

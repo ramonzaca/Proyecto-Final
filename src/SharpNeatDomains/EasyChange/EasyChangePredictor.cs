@@ -46,39 +46,49 @@ namespace SharpNeat.Domains.EasyChange
             set { _predictionPath = value; }
         }
 
-        public int Predict(NeatGenome genome, double[] inputs)
+        public int Predict(List<NeatGenome> genomeList, double[] inputs)
         {
             double output;
-            IBlackBox box = _decoder.Decode(genome);
-            ISignalArray inputArr = box.InputSignalArray;
-            ISignalArray outputArr = box.OutputSignalArray;
-
-            for (int j = 0; j < inputs.Length; j++)
+            double voteYes = 0;
+            double voteNo = 0;
+            for (int i = 0; i < genomeList.Count; i++)
             {
-                inputArr[j] = inputs[j];
+                IBlackBox box = _decoder.Decode(genomeList[i]);
+                ISignalArray inputArr = box.InputSignalArray;
+                ISignalArray outputArr = box.OutputSignalArray;
+
+                for (int j = 0; j < inputs.Length; j++)
+                {
+                    inputArr[j] = inputs[j];
+                }
+
+                // Activate the black box.
+                box.Activate();
+                if (!box.IsStateValid)
+                {   // Any black box that gets itself into an invalid state is unlikely to be
+                    // any good, so let's just exit here.
+                    return -1;
+                }
+
+                // Read output signal.
+                output = outputArr[0];
+
+                // Reset black box state ready for next test case.
+                box.ResetState();
+
+
+                if (output >= 0.5)
+                    voteYes += 1;
+                else
+                    voteNo += 1;
             }
-
-            // Activate the black box.
-            box.Activate();
-            if (!box.IsStateValid)
-            {   // Any black box that gets itself into an invalid state is unlikely to be
-                // any good, so let's just exit here.
-                return -1;
-            }
-
-            // Read output signal.
-            output = outputArr[0];
-
-            // Reset black box state ready for next test case.
-            box.ResetState();
-
-
-            if (output >= 0.5)
+            if (voteYes > voteNo)
                 return 1;
-            else
+            else if (voteYes < voteNo)
                 return 0;
+            else
+                return -1;
         }
-
 
     }
 }
