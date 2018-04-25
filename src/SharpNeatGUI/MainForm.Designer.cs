@@ -125,6 +125,15 @@
             this.txtParamOffspringCrossover = new System.Windows.Forms.TextBox();
             this.label26 = new System.Windows.Forms.Label();
             this.txtParamOffspringAsexual = new System.Windows.Forms.TextBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label37 = new System.Windows.Forms.Label();
+            this.txtPredictionFilePath = new System.Windows.Forms.TextBox();
+            this.txtLoadDatasetPath = new System.Windows.Forms.TextBox();
+            this.btnLoadDataset = new System.Windows.Forms.Button();
+            this.txtLoadGenomePath = new System.Windows.Forms.TextBox();
+            this.btnLoadGenome = new System.Windows.Forms.Button();
+            this.txtPredictionStatus = new System.Windows.Forms.TextBox();
+            this.btnEvaluate = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -161,15 +170,6 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.btnEvaluate = new System.Windows.Forms.Button();
-            this.txtPredictionStatus = new System.Windows.Forms.TextBox();
-            this.btnLoadGenome = new System.Windows.Forms.Button();
-            this.txtLoadGenomePath = new System.Windows.Forms.TextBox();
-            this.txtLoadDatasetPath = new System.Windows.Forms.TextBox();
-            this.btnLoadDataset = new System.Windows.Forms.Button();
-            this.txtPredictionFilePath = new System.Windows.Forms.TextBox();
-            this.label37 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -184,8 +184,8 @@
             this.tabPage2.SuspendLayout();
             this.gbxNeatGenomeParameters.SuspendLayout();
             this.gbxEAParameters.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -1228,6 +1228,105 @@
             this.txtParamOffspringAsexual.TabIndex = 48;
             this.txtParamOffspringAsexual.Text = "0.5";
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.label37);
+            this.tabPage3.Controls.Add(this.txtPredictionFilePath);
+            this.tabPage3.Controls.Add(this.txtLoadDatasetPath);
+            this.tabPage3.Controls.Add(this.btnLoadDataset);
+            this.tabPage3.Controls.Add(this.txtLoadGenomePath);
+            this.tabPage3.Controls.Add(this.btnLoadGenome);
+            this.tabPage3.Controls.Add(this.txtPredictionStatus);
+            this.tabPage3.Controls.Add(this.btnEvaluate);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(691, 414);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Page3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label37
+            // 
+            this.label37.Location = new System.Drawing.Point(400, 213);
+            this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(203, 20);
+            this.label37.TabIndex = 58;
+            this.label37.Text = "Prediction File";
+            // 
+            // txtPredictionFilePath
+            // 
+            this.txtPredictionFilePath.Location = new System.Drawing.Point(26, 213);
+            this.txtPredictionFilePath.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPredictionFilePath.Name = "txtPredictionFilePath";
+            this.txtPredictionFilePath.Size = new System.Drawing.Size(335, 22);
+            this.txtPredictionFilePath.TabIndex = 57;
+            // 
+            // txtLoadDatasetPath
+            // 
+            this.txtLoadDatasetPath.Location = new System.Drawing.Point(26, 168);
+            this.txtLoadDatasetPath.Margin = new System.Windows.Forms.Padding(4);
+            this.txtLoadDatasetPath.Name = "txtLoadDatasetPath";
+            this.txtLoadDatasetPath.Size = new System.Drawing.Size(335, 22);
+            this.txtLoadDatasetPath.TabIndex = 55;
+            // 
+            // btnLoadDataset
+            // 
+            this.btnLoadDataset.Enabled = false;
+            this.btnLoadDataset.Location = new System.Drawing.Point(403, 163);
+            this.btnLoadDataset.Margin = new System.Windows.Forms.Padding(4);
+            this.btnLoadDataset.Name = "btnLoadDataset";
+            this.btnLoadDataset.Size = new System.Drawing.Size(168, 33);
+            this.btnLoadDataset.TabIndex = 54;
+            this.btnLoadDataset.Text = "Load Dataset";
+            this.btnLoadDataset.Click += new System.EventHandler(this.btnLoadDataset_Click);
+            // 
+            // txtLoadGenomePath
+            // 
+            this.txtLoadGenomePath.Location = new System.Drawing.Point(26, 127);
+            this.txtLoadGenomePath.Margin = new System.Windows.Forms.Padding(4);
+            this.txtLoadGenomePath.Name = "txtLoadGenomePath";
+            this.txtLoadGenomePath.Size = new System.Drawing.Size(335, 22);
+            this.txtLoadGenomePath.TabIndex = 53;
+            // 
+            // btnLoadGenome
+            // 
+            this.btnLoadGenome.Enabled = false;
+            this.btnLoadGenome.Location = new System.Drawing.Point(403, 122);
+            this.btnLoadGenome.Margin = new System.Windows.Forms.Padding(4);
+            this.btnLoadGenome.Name = "btnLoadGenome";
+            this.btnLoadGenome.Size = new System.Drawing.Size(168, 33);
+            this.btnLoadGenome.TabIndex = 52;
+            this.btnLoadGenome.Text = "Load Genome";
+            this.btnLoadGenome.Click += new System.EventHandler(this.btnLoadGenome_Click);
+            // 
+            // txtPredictionStatus
+            // 
+            this.txtPredictionStatus.BackColor = System.Drawing.Color.Red;
+            this.txtPredictionStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPredictionStatus.ForeColor = System.Drawing.Color.Black;
+            this.txtPredictionStatus.Location = new System.Drawing.Point(127, 53);
+            this.txtPredictionStatus.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPredictionStatus.Name = "txtPredictionStatus";
+            this.txtPredictionStatus.ReadOnly = true;
+            this.txtPredictionStatus.Size = new System.Drawing.Size(425, 23);
+            this.txtPredictionStatus.TabIndex = 51;
+            this.txtPredictionStatus.TabStop = false;
+            this.txtPredictionStatus.Text = "Ready to begin";
+            this.txtPredictionStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // btnEvaluate
+            // 
+            this.btnEvaluate.Enabled = false;
+            this.btnEvaluate.Location = new System.Drawing.Point(291, 285);
+            this.btnEvaluate.Margin = new System.Windows.Forms.Padding(4);
+            this.btnEvaluate.Name = "btnEvaluate";
+            this.btnEvaluate.Size = new System.Drawing.Size(93, 43);
+            this.btnEvaluate.TabIndex = 1;
+            this.btnEvaluate.Text = "Evaluate";
+            this.btnEvaluate.Click += new System.EventHandler(this.btnEvaluate_Click);
+            // 
             // menuStrip1
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -1521,105 +1620,6 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.label37);
-            this.tabPage3.Controls.Add(this.txtPredictionFilePath);
-            this.tabPage3.Controls.Add(this.txtLoadDatasetPath);
-            this.tabPage3.Controls.Add(this.btnLoadDataset);
-            this.tabPage3.Controls.Add(this.txtLoadGenomePath);
-            this.tabPage3.Controls.Add(this.btnLoadGenome);
-            this.tabPage3.Controls.Add(this.txtPredictionStatus);
-            this.tabPage3.Controls.Add(this.btnEvaluate);
-            this.tabPage3.Location = new System.Drawing.Point(4, 25);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(691, 414);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Page3";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // btnEvaluate
-            // 
-            this.btnEvaluate.Enabled = false;
-            this.btnEvaluate.Location = new System.Drawing.Point(307, 276);
-            this.btnEvaluate.Margin = new System.Windows.Forms.Padding(4);
-            this.btnEvaluate.Name = "btnEvaluate";
-            this.btnEvaluate.Size = new System.Drawing.Size(93, 43);
-            this.btnEvaluate.TabIndex = 1;
-            this.btnEvaluate.Text = "Evaluate";
-            this.btnEvaluate.Click += new System.EventHandler(this.btnEvaluate_Click);
-            // 
-            // txtPredictionStatus
-            // 
-            this.txtPredictionStatus.BackColor = System.Drawing.Color.Green;
-            this.txtPredictionStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPredictionStatus.ForeColor = System.Drawing.Color.Black;
-            this.txtPredictionStatus.Location = new System.Drawing.Point(127, 53);
-            this.txtPredictionStatus.Margin = new System.Windows.Forms.Padding(4);
-            this.txtPredictionStatus.Name = "txtPredictionStatus";
-            this.txtPredictionStatus.ReadOnly = true;
-            this.txtPredictionStatus.Size = new System.Drawing.Size(425, 23);
-            this.txtPredictionStatus.TabIndex = 51;
-            this.txtPredictionStatus.TabStop = false;
-            this.txtPredictionStatus.Text = "Ready to begin";
-            this.txtPredictionStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // btnLoadGenome
-            // 
-            this.btnLoadGenome.Enabled = false;
-            this.btnLoadGenome.Location = new System.Drawing.Point(403, 122);
-            this.btnLoadGenome.Margin = new System.Windows.Forms.Padding(4);
-            this.btnLoadGenome.Name = "btnLoadGenome";
-            this.btnLoadGenome.Size = new System.Drawing.Size(168, 33);
-            this.btnLoadGenome.TabIndex = 52;
-            this.btnLoadGenome.Text = "Load Genome";
-            this.btnLoadGenome.Click += new System.EventHandler(this.btnLoadGenome_Click);
-            // 
-            // txtLoadGenomePath
-            // 
-            this.txtLoadGenomePath.Location = new System.Drawing.Point(26, 127);
-            this.txtLoadGenomePath.Margin = new System.Windows.Forms.Padding(4);
-            this.txtLoadGenomePath.Name = "txtLoadGenomePath";
-            this.txtLoadGenomePath.Size = new System.Drawing.Size(335, 22);
-            this.txtLoadGenomePath.TabIndex = 53;
-            // 
-            // txtLoadDatasetPath
-            // 
-            this.txtLoadDatasetPath.Location = new System.Drawing.Point(26, 168);
-            this.txtLoadDatasetPath.Margin = new System.Windows.Forms.Padding(4);
-            this.txtLoadDatasetPath.Name = "txtLoadDatasetPath";
-            this.txtLoadDatasetPath.Size = new System.Drawing.Size(335, 22);
-            this.txtLoadDatasetPath.TabIndex = 55;
-            // 
-            // btnLoadDataset
-            // 
-            this.btnLoadDataset.Enabled = false;
-            this.btnLoadDataset.Location = new System.Drawing.Point(403, 163);
-            this.btnLoadDataset.Margin = new System.Windows.Forms.Padding(4);
-            this.btnLoadDataset.Name = "btnLoadDataset";
-            this.btnLoadDataset.Size = new System.Drawing.Size(168, 33);
-            this.btnLoadDataset.TabIndex = 54;
-            this.btnLoadDataset.Text = "Load Dataset";
-            this.btnLoadDataset.Click += new System.EventHandler(this.btnLoadDataset_Click);
-            // 
-            // txtPredictionFilePath
-            // 
-            this.txtPredictionFilePath.Location = new System.Drawing.Point(26, 213);
-            this.txtPredictionFilePath.Margin = new System.Windows.Forms.Padding(4);
-            this.txtPredictionFilePath.Name = "txtPredictionFilePath";
-            this.txtPredictionFilePath.Size = new System.Drawing.Size(335, 22);
-            this.txtPredictionFilePath.TabIndex = 57;
-            // 
-            // label37
-            // 
-            this.label37.Location = new System.Drawing.Point(400, 213);
-            this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(203, 20);
-            this.label37.TabIndex = 58;
-            this.label37.Text = "Prediction File";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1653,10 +1653,10 @@
             this.gbxNeatGenomeParameters.PerformLayout();
             this.gbxEAParameters.ResumeLayout(false);
             this.gbxEAParameters.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }

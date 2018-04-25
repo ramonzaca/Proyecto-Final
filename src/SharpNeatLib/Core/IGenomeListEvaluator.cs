@@ -43,5 +43,6 @@ namespace SharpNeat.Core
         /// Reset the internal state of the evaluation scheme if any exists.
         /// </summary>
         void Reset();
+        
     }
 }

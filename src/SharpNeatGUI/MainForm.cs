@@ -56,6 +56,7 @@ namespace SharpNeatGUI
         double _champGenomeFitness;
         /// <summary>Array of 'nice' colors for chart plots.</summary>
         Color[] _plotColorArr;
+        EasyChangePredictor _predictor;
 
         #endregion
 
@@ -138,6 +139,8 @@ namespace SharpNeatGUI
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Accuracy", 0));
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Escalated Accuracy", 1));
             cmbFitnessFnc.SelectedIndex = 0;
+
+            _predictor = new EasyChangePredictor(_selectedExperiment.CreateGenomeDecoder());
 
         }
 
@@ -1932,119 +1935,92 @@ namespace SharpNeatGUI
 
         private void btnEvaluate_Click(object sender, EventArgs e)
         {
-            EasyChangeExperiment exp = GetSelectedExperiment();
-            List<NeatGenome> genomeList;
-            using (XmlReader xr = XmlReader.Create(txtLoadGenomePath.Text))
+            if (_predictor.StatusCompleted)
             {
-                genomeList = exp.LoadPopulation(xr);
-            }
-
-            if (genomeList.Count == 0)
-            {
-                __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
-                return;
-            }
-
-            
-            string line;
-            List<double[]> valuesFROMcsv = new List<double[]>();
-            StreamReader reader = File.OpenText(txtLoadDatasetPath.Text);
-            while ((line = reader.ReadLine()) != null)
-            {
-
-                string[] items = line.Split(',');
-
-                double[] itemsAsDouble = new double[items.Length-1];
-                // Se convierten los valores uno a uno para evitar problemas en el modo en que estan guardados los datos 
-                for (int i = 0; i < items.Length - 1; i++)
-                {
-                    if (items[i].Count(f => f == '.') > 1)
-                        itemsAsDouble[i] = Double.Parse(items[i]) / 1000;
-                    else
-                        itemsAsDouble[i] = Double.Parse(items[i], CultureInfo.InvariantCulture);
-                }
-                valuesFROMcsv.Add(itemsAsDouble);
-
-                
-            }
-
-            double[] secArray = new double[valuesFROMcsv.Count];
-            for (int i = 0; i < valuesFROMcsv[0].Length; i++) // No normalizar la salida
-            {
-                for (int j = 0; j < valuesFROMcsv.Count; j++)
-                {
-                    secArray[j] = valuesFROMcsv[j][i];
-                }
-                var normalizedArray = NormalizeData(secArray, -1, 1);
-                for (int j = 0; j < valuesFROMcsv.Count; j++)
-                {
-                    valuesFROMcsv[j][i] = normalizedArray[j];
-                }
+                txtPredictionStatus.Text = "Ready to begin";
+                txtPredictionStatus.BackColor = Color.Red;
+                btnEvaluate.Text = "Evaluate";
+                _predictor.StatusCompleted = false;
 
             }
-            double[] predictions = new double[valuesFROMcsv.Count];
-            StreamWriter writer = new StreamWriter("../../../Predicciones/" + txtPredictionFilePath.Text);
-            IGenomeDecoder<NeatGenome, IBlackBox>  decoder = exp.CreateGenomeDecoder();
-
-            int result;
-            for(int i = 0; i< valuesFROMcsv.Count; i++)
-            {
-                result = Predict(decoder.Decode(genomeList[0]), valuesFROMcsv[i]);
-                if (result == 1)
-                    writer.WriteLine("True");
-                else if(result == 0)
-                    writer.WriteLine("False");
-                else
-                    writer.WriteLine("Inconclusive");
-            }
-            writer.Close(); 
-            
-        }
-
-        private int Predict(IBlackBox box, double[] inputs)
-        {
-            double output;
-            ISignalArray inputArr = box.InputSignalArray;
-            ISignalArray outputArr = box.OutputSignalArray;
-            
-            for (int j = 0; j < inputs.Length; j++)
-            {
-                inputArr[j] = inputs[j];
-            }
-
-            // Activate the black box.
-            box.Activate();
-            if (!box.IsStateValid)
-            {   // Any black box that gets itself into an invalid state is unlikely to be
-                // any good, so let's just exit here.
-                return -1;
-            }
-
-            // Read output signal.
-            output = outputArr[0];
-
-            // Reset black box state ready for next test case.
-            box.ResetState();
-
-
-            if (output >= 0.5)
-                return 1;
             else
-                return 0;
+            {
+                if (_predictor.GenomePath == "")
+                {
+                    __log.WarnFormat("No genome loaded. Specify genome.");
+                    return;
+                }
+                if (_predictor.DatasetPath == "")
+                {
+                    __log.WarnFormat("No dataset loaded. Specify dataset to predict.");
+                    return;
+                }
+                if (txtPredictionFilePath.Text == "")
+                {
+                    __log.WarnFormat("No prediction filename specified. Write the name of the prediction file.");
+                    return;
+                }
+                EasyChangeExperiment exp = GetSelectedExperiment();
+                List<NeatGenome> genomeList;
+                using (XmlReader xr = XmlReader.Create(_predictor.GenomePath))
+                {
+                    genomeList = exp.LoadPopulation(xr);
+                }
+
+                if (genomeList.Count == 0)
+                {
+                    __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
+                    return;
+                }
+                txtPredictionStatus.Text = "Predicting";
+                txtPredictionStatus.BackColor = Color.Blue;
+                List<double[]> valuesFROMcsv = EasyChangeDataLoader.loadDataset(_predictor.DatasetPath);
+
+                StreamWriter writer = new StreamWriter("../../../Predicciones/" + txtPredictionFilePath.Text);
+
+                if (exp.NormalizeData)
+                {
+                    double[] secArray = new double[valuesFROMcsv.Count];
+                    for (int i = 0; i < valuesFROMcsv[0].Length; i++) // No normalizar la salida
+                    {
+                        for (int j = 0; j < valuesFROMcsv.Count; j++)
+                        {
+                            secArray[j] = valuesFROMcsv[j][i];
+                        }
+                        var normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, -exp.NormalizeRange, exp.NormalizeRange);
+                        for (int j = 0; j < valuesFROMcsv.Count; j++)
+                        {
+                            valuesFROMcsv[j][i] = normalizedArray[j];
+                        }
+
+                    }
+                }
+
+
+
+                int result;
+                for (int i = 0; i < valuesFROMcsv.Count; i++)
+                {
+                    result = _predictor.Predict(genomeList[0], valuesFROMcsv[i]);
+                    if (result == 1)
+                        writer.WriteLine("True");
+                    else if (result == 0)
+                        writer.WriteLine("False");
+                    else
+                        writer.WriteLine("Inconclusive");
+                }
+                writer.Close();
+                txtPredictionStatus.Text = "Prediction Completed";
+                txtPredictionStatus.BackColor = Color.Green;
+                btnEvaluate.Text = "Restart";
+                _predictor.StatusCompleted = true;
+
+            }
         }
 
-        //Función secundaria de normalizado
-        private static double[] NormalizeData(IEnumerable<double> data, int min, int max)
-        {
-            double dataMax = data.Max();
-            double dataMin = data.Min();
-            double range = dataMax - dataMin;
+        
 
-            return data
-                .Select(d => (d - dataMin) / range)
-                .Select(n => ((1 - n) * min + n * max))
-                .ToArray();
-        }
+ 
 
         private void btnLoadGenome_Click(object sender, EventArgs e)
         {
@@ -2053,7 +2029,8 @@ namespace SharpNeatGUI
             {
                 return;
             }
-            txtLoadGenomePath.Text = genFilePath;
+            _predictor.GenomePath = genFilePath;
+            txtLoadGenomePath.Text = genFilePath.Split('\\').Last();
         }
 
         private void btnLoadDataset_Click(object sender, EventArgs e)
@@ -2063,7 +2040,8 @@ namespace SharpNeatGUI
             {
                 return;
             }
-            txtLoadDatasetPath.Text = datasetFilePath;
+            _predictor.DatasetPath = datasetFilePath;
+            txtLoadDatasetPath.Text = datasetFilePath.Split('\\').Last();
         }
     }
 }
