@@ -31,6 +31,7 @@ using SharpNeat.EvolutionAlgorithms.ComplexityRegulation;
 using SharpNeat.Genomes.Neat;
 using SharpNeat.Phenomes;
 using SharpNeat.Utility;
+using System.Threading.Tasks;
 
 namespace SharpNeatGUI
 {
@@ -213,6 +214,14 @@ namespace SharpNeatGUI
            return _selectedExperiment;
         }
 
+        private void cmbFitnessFnc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            EasyChangeExperiment exp = GetSelectedExperiment();
+            exp.FitnessFunction = cmbFitnessFnc.SelectedIndex;
+            UpdateGuiState();
+
+        }
+
         #endregion
 
         #region GUI Wiring [Population Init]
@@ -348,6 +357,7 @@ namespace SharpNeatGUI
             _selectedExperiment.NormalizeData = chBoxNormalizeData.Checked;
             _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
             _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
+            _selectedExperiment.ParallelOps.MaxDegreeOfParallelism = ParseInt(txtMaxParallelism, _selectedExperiment.ParallelOps.MaxDegreeOfParallelism);
         }
 
         #endregion
@@ -425,6 +435,7 @@ namespace SharpNeatGUI
             btnLoadDataset.Enabled = true;
             btnLoadGenome.Enabled = true;
             txtPredictionFilePath.Enabled = true;
+            txtMaxParallelism.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -479,6 +490,7 @@ namespace SharpNeatGUI
             btnLoadDataset.Enabled = false;
             btnLoadGenome.Enabled = false;
             txtPredictionFilePath.Enabled = false;
+            txtMaxParallelism.Enabled = true;
 
 
 
@@ -540,6 +552,7 @@ namespace SharpNeatGUI
             btnLoadDataset.Enabled = false;
             btnLoadGenome.Enabled = false;
             txtPredictionFilePath.Enabled = false;
+            txtMaxParallelism.Enabled = false;
 
 
             // Logging to file.
@@ -594,7 +607,7 @@ namespace SharpNeatGUI
             txtNormalizeRange.Enabled = false;
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = false;
-
+            txtMaxParallelism.Enabled = false;
 
             // Logging to file.
             gbxLogging.Enabled = false;
@@ -1919,13 +1932,7 @@ namespace SharpNeatGUI
 
         #endregion
 
-        private void cmbFitnessFnc_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            EasyChangeExperiment exp = GetSelectedExperiment();
-            exp.FitnessFunction = cmbFitnessFnc.SelectedIndex;
-            UpdateGuiState();
-            
-        }
+        
 
         #region GUI Wiring [Evaluation]
         private void btnEvaluate_Click(object sender, EventArgs e)

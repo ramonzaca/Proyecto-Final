@@ -168,6 +168,8 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label29 = new System.Windows.Forms.Label();
+            this.txtMaxParallelism = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -813,6 +815,8 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label29);
+            this.tabPage2.Controls.Add(this.txtMaxParallelism);
             this.tabPage2.Controls.Add(this.chBoxNormalizeData);
             this.tabPage2.Controls.Add(this.label33);
             this.tabPage2.Controls.Add(this.cmbFitnessFnc);
@@ -1602,6 +1606,25 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(429, 380);
+            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(105, 17);
+            this.label29.TabIndex = 69;
+            this.label29.Text = "Max Parallelism";
+            // 
+            // txtMaxParallelism
+            // 
+            this.txtMaxParallelism.Location = new System.Drawing.Point(362, 376);
+            this.txtMaxParallelism.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMaxParallelism.Name = "txtMaxParallelism";
+            this.txtMaxParallelism.Size = new System.Drawing.Size(63, 22);
+            this.txtMaxParallelism.TabIndex = 68;
+            this.txtMaxParallelism.Text = "7";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1784,5 +1807,7 @@
         private System.Windows.Forms.Button btnLoadDataset;
         private System.Windows.Forms.Label label37;
         private System.Windows.Forms.CheckBox chBoxNormalizeData;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.TextBox txtMaxParallelism;
     }
 }

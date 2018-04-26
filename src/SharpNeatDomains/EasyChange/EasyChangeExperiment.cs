@@ -70,6 +70,11 @@ namespace SharpNeat.Domains.EasyChange
 
         #region Gets
 
+        public ParallelOptions ParallelOps
+        {
+            get { return _parallelOptions; }
+            set { _parallelOptions = value; }
+        }
         public int FitnessFunction
         {
             get { return _fitnessFunction; }
