@@ -136,7 +136,7 @@ namespace SharpNeat.Core
         /// <summary>
         /// Test that selects genomes that have never been evaluated.
         /// </summary>
-        public static Predicate<TGenome> CreatePredicate_CheckforTrainingStatus(NeatEvolutionAlgorithm<NeatGenome> ea,int maxGen)
+        public static Predicate<TGenome> CreatePredicate_CheckForTrainingStatus(NeatEvolutionAlgorithm<NeatGenome> ea,int maxGen)
         {
             return delegate (TGenome genome)
             {

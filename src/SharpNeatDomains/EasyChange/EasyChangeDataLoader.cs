@@ -9,148 +9,132 @@ using System.Globalization;
 
 namespace SharpNeat.Domains.EasyChange
 {
+    /// <summary>
+    /// DataLoader class for an EasyChange experiment.
+    /// </summary>
     public class EasyChangeDataLoader
     {
-        static List<double[]> moleculeCaracteristics;
-        static int _totalImageCount;
-        static int _pixelCount; // Todos las moléculas tienen la misma cantidad de características
-        static double[] _allIdentifiers;
-        static List<double[]> _allImages;
-        static bool[] _testClases;
+        static List<double[]> _moleculeCaracteristics;
+        static int _moleculesCount;
+        static int _caracteristicsCount; 
+        static List<double[]> _moleculesData;
+        static bool[] _moleculesResults;
 
         #region Properties
 
         public List<double[]> MoleculeCaracteristics
         {
-            get
-            {
-                return moleculeCaracteristics;
-            }
+            get { return _moleculeCaracteristics; }
         }
 
-        public int TotalImageCount
+        public int MoleculesCount
         {
-            get
-            {
-                return _totalImageCount;
-            }
+            get { return _moleculesCount; }
         }
 
-        public int PixelCount
+        public int CaracteristicsCount
         {
-            get
-            {
-                return _pixelCount;
-            }
+            get { return _caracteristicsCount; }
         }
 
-        public double[] AllIdentifiers
+        public List<double[]> MoleculesData
         {
-            get
-            {
-                return _allIdentifiers;
-            }
+            get { return _moleculesData; }
         }
 
-        public List<double[]> AllImages
+        public bool[] MoleculesResults
         {
-            get
-            {
-                return _allImages;
-            }
+            get { return _moleculesResults; }
         }
-
-        public bool[] TestClases
-        {
-            get
-            {
-                return _testClases;
-            }
-        }
-
-   
 
         #endregion
 
-        // Función de inicialización de cargado de datos
+        /// <summary>
+        /// Initialization method for the dataloader.
+        /// </summary>
         public void Initialize(string jsonPath = @"",bool normalizeData = true, int normalizeRange = 2, int seed = 8978  )
         {
 
-            moleculeCaracteristics = loadDataset(jsonPath);
+            // Loads data from the specified file.
+            _moleculeCaracteristics = loadDataset(jsonPath);
+
             //double[] debuj = GetRange(moleculeCaracteristics);
-            _totalImageCount = moleculeCaracteristics.Count;
-            _pixelCount = moleculeCaracteristics[0].Length - 1;
-            _allIdentifiers = new double[_totalImageCount];
-            _allImages = new List<double[]>();
+            _moleculesCount = _moleculeCaracteristics.Count;
+            _caracteristicsCount = _moleculeCaracteristics[0].Length - 1;
+            _moleculesData = new List<double[]>();
            
             
 
-            // Mezclo los resultados
+            // Data is randomly shuffled form a specific seed for experiment recreation purposes.
             Shuffle(seed);
 
-            // Si se decide normalizar los datos
+            // Results are gathered.
+            _moleculesResults = new bool[_moleculesCount];
+            for (int p = 0; p < _moleculesCount; p++)
+                if (_moleculeCaracteristics[p][_caracteristicsCount] == 1.0)
+                    _moleculesResults[p] = true;
+                else
+                    _moleculesResults[p] = false;
+
+
+            // If data is normalized.
             if (normalizeData)
             {
-                double[] secArray = new double[moleculeCaracteristics.Count];
-                for (int i = 0; i < moleculeCaracteristics[0].Length - 1; i++) // No normalizar la salida
+                double[] secArray = new double[_moleculeCaracteristics.Count];
+                double[] normalizedArray;
+                for (int i = 0; i < _moleculeCaracteristics[0].Length - 1; i++) // The result is not normalized
                 {
-                    for (int j = 0; j < moleculeCaracteristics.Count; j++)
+                    for (int j = 0; j < _moleculeCaracteristics.Count; j++)
                     {
-                        secArray[j] = moleculeCaracteristics[j][i];
+                        secArray[j] = _moleculeCaracteristics[j][i];
                     }
-                    var normalizedArray = NormalizeData(secArray, -normalizeRange, normalizeRange);
-                    for (int j = 0; j < moleculeCaracteristics.Count; j++)
+                    normalizedArray = NormalizeData(secArray, -normalizeRange, normalizeRange);
+                    for (int j = 0; j < _moleculeCaracteristics.Count; j++)
                     {
-                        moleculeCaracteristics[j][i] = normalizedArray[j];
+                        _moleculeCaracteristics[j][i] = normalizedArray[j];
                     }
 
                 }
             }
-            // Selecciono la salida
-            for (int i = 0; i < moleculeCaracteristics.Count; i++)
+            
+            // Separates the data from the result
+            for (int i = 0; i < _moleculeCaracteristics.Count; i++)
             {
-                // El valor de la propiedad a calcular se encuentra al final del arreglo
-                _allIdentifiers[i] = moleculeCaracteristics[i][_pixelCount];
-
-                // Se evalúan todas las propiedades
-                _allImages.Add(moleculeCaracteristics[i].Take(_pixelCount).ToArray());
+                _moleculesData.Add(_moleculeCaracteristics[i].Take(_caracteristicsCount).ToArray());
             }
 
-            //Para analisis de clases
-
-            _testClases = new bool[_allIdentifiers.Length];
-            for (int p = 0; p < _allIdentifiers.Length; p++)
-                if (_allIdentifiers[p] == 1.0)
-                    _testClases[p] = true;
-                else
-                    _testClases[p] = false;
         }
 
-        // Obtiene el la información del dataset y lo devuleve como una lista de doubles
+        /// <summary>
+        /// Loads data form the speficied file and returns it as a list of doubles.
+        /// </summary>
         public static List<double[]> loadDataset(string jsonPath = @"")
         {
             List<double[]> valuesFROMcsv = new List<double[]>();
             int count = jsonPath.Split('\\').Length;
             string filesPath;
-            if (jsonPath.Split('\\').Length > 1) {
+
+            // If the path is relative.
+            if (jsonPath.Split('\\').Length > 1)
+            {
                 filesPath = jsonPath;
             }
-            else { 
-            
+            else
+            {             
                 string currentAssemblyDirectoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                filesPath = currentAssemblyDirectoryName + "/../../../Data/" + jsonPath;
+                filesPath = currentAssemblyDirectoryName + "/Data/" + jsonPath;
             }
-            int lineCount = 0;
 
+            // We open the file and read line by line, converting each number into a double type and adding it to the 
+            // exit list of arrays.
             StreamReader reader = File.OpenText(filesPath);
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                
                 string[] items = line.Split(',');
 
                 double[] itemsAsDouble = new double[items.Length];
-                // Se convierten los valores uno a uno para evitar problemas en el modo en que estan guardados los datos 
+                // Numbers are converted.
                 for (int i = 0; i < items.Length; i++)
                 {
                     if (items[i].Count(f => f == '.') > 1)
@@ -159,14 +143,13 @@ namespace SharpNeat.Domains.EasyChange
                         itemsAsDouble[i] = Double.Parse(items[i], CultureInfo.InvariantCulture);
                 }
                 valuesFROMcsv.Add(itemsAsDouble);
-                
-                lineCount++;
-            }
-                    
+            }                    
             return valuesFROMcsv;
         }
 
-        //Función secundaria de normalizado
+        /// <summary>
+        /// Method to make lineal normalization of data.
+        /// </summary>
         public static double[] NormalizeData(IEnumerable<double> data, int min, int max)
         {
             double dataMax = data.Max();
@@ -179,7 +162,9 @@ namespace SharpNeat.Domains.EasyChange
                 .ToArray();
         }
 
-        // Devuelve un arreglo con el rango de cada caracteristica de las moleculas. Solo para propositos de debuj
+        /// <summary>
+        /// Method to check the range in each caracterist of all molecules of the dataset. Only used in debug purposes.
+        /// </summary>
         private double[] GetRange(List<double[]> valuesFROMcsv)
         {
             double[] range = new double[valuesFROMcsv[0].Length];
@@ -205,18 +190,21 @@ namespace SharpNeat.Domains.EasyChange
             return range;
         }
 
-        public static void Shuffle(int seed)
+        /// <summary>
+        /// Randomly shuffles the stored data from a specified seed for experiment reacreation purposes.
+        /// </summary>
+        private static void Shuffle(int seed)
         {
 
             Random rng = new Random(seed);
-            int n = moleculeCaracteristics.Count;
+            int n = _moleculeCaracteristics.Count;
             while (n > 1)
             {
                 n--;
                 int k = rng.Next(n + 1);
-                var value = moleculeCaracteristics[k];
-                moleculeCaracteristics[k] = moleculeCaracteristics[n];
-                moleculeCaracteristics[n] = value;
+                var value = _moleculeCaracteristics[k];
+                _moleculeCaracteristics[k] = _moleculeCaracteristics[n];
+                _moleculeCaracteristics[n] = value;
             }
         }
 

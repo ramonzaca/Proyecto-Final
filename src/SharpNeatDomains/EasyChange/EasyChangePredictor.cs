@@ -11,6 +11,9 @@ using SharpNeat.Phenomes;
 
 namespace SharpNeat.Domains.EasyChange
 {
+    /// <summary>
+    /// Predictor class for an EasyChange experiment
+    /// </summary>
     public class EasyChangePredictor
     {
         string _genomePath;
@@ -20,6 +23,7 @@ namespace SharpNeat.Domains.EasyChange
         bool _statusCompleted;
         List<NeatGenome> _genomeList;
 
+        
         public EasyChangePredictor(EasyChangeExperiment experiment) {
             _experiment = experiment;
             _statusCompleted = false;
@@ -62,21 +66,23 @@ namespace SharpNeat.Domains.EasyChange
             }
         }
 
-        public int Predict(string predictionFilePath, bool normalizeData,int normalizeRange)
+        public void Predict(string predictionFilePath, bool normalizeData,int normalizeRange)
         {
             double output;
             double voteYes;
             double voteNo;
 
+            // We load the dataset
             List<double[]> valuesFROMcsv = EasyChangeDataLoader.loadDataset(_datasetPath);
 
-            StreamWriter writer = new StreamWriter("Predicciones/" + predictionFilePath);
+            // We create the writer for the output file.
+            StreamWriter writer = new StreamWriter("Predictions/" + predictionFilePath);
 
-            // Normalizado de la informacion
+            // If data must be normalized
             if (normalizeData)
             {
                 double[] secArray = new double[valuesFROMcsv.Count];
-                for (int i = 0; i < valuesFROMcsv[0].Length; i++) // No normalizar la salida
+                for (int i = 0; i < valuesFROMcsv[0].Length; i++) 
                 {
                     for (int j = 0; j < valuesFROMcsv.Count; j++)
                     {
@@ -91,6 +97,8 @@ namespace SharpNeat.Domains.EasyChange
                 }
             }
 
+            // For each case in the dataset file, all genomes vote on what the outcome should be.
+            // If there is only one genome (champion case), the election is prety rigged.
             foreach (double[] inputs in valuesFROMcsv)
             {
                 voteNo = 0;
@@ -120,13 +128,15 @@ namespace SharpNeat.Domains.EasyChange
                         // Reset black box state ready for next test case.
                         box.ResetState();
 
-
+                        // Voting part.
                         if (output >= 0.5)
                             voteYes += 1;
                         else
                             voteNo += 1;
                     }
                 }
+
+                // After all genomes have voted, the mayority is writen in the output file.
                 if (voteYes > voteNo)
                     writer.WriteLine("1");
                 else if (voteYes < voteNo)
@@ -135,7 +145,6 @@ namespace SharpNeat.Domains.EasyChange
                     writer.WriteLine("Inconclusive");
             }
             writer.Close();
-            return 1;
         }
 
     }

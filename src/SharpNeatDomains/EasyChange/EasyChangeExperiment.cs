@@ -88,19 +88,13 @@ namespace SharpNeat.Domains.EasyChange
         }
         public int Seed
         {
-            get
-            {
-                return _seed;
-            }
+            get { return _seed;  }
             set { _seed = value; }
         }
 
         public int SavePeriod
         {
-            get
-            {
-                return _savePeriod;
-            }
+            get { return _savePeriod; }
             set { _savePeriod = value; }
         }
       
@@ -118,27 +112,18 @@ namespace SharpNeat.Domains.EasyChange
 
         public EasyChangeDataLoader DataLoader
         {
-            get
-            {
-                return _dataLoader;
-            }
+            get { return _dataLoader; }
         }
 
         public bool NormalizeData
         {
-            get
-            {
-                return _normalizeData;
-            }
+            get { return _normalizeData; }
             set { _normalizeData = value; }
         }
 
         public int NormalizeRange
         {
-            get
-            {
-                return _normalizeRange;
-            }
+            get { return _normalizeRange; }
             set { _normalizeRange = value; }
         }
         #endregion
@@ -166,7 +151,7 @@ namespace SharpNeat.Domains.EasyChange
         /// </summary>
         public int InputCount
         {
-            get { return _dataLoader.PixelCount; }
+            get { return _dataLoader.CaracteristicsCount; }
         }
 
         /// <summary>
@@ -204,10 +189,8 @@ namespace SharpNeat.Domains.EasyChange
             get { return _neatGenomeParams; }
         }
 
-
-
         /// <summary>
-        /// Initialize the experiment with some optional XML configuration data.
+        /// Initialize the experiment with some XML configuration data.
         /// </summary>
         public void Initialize(string name, XmlElement xmlConfig)
         {
@@ -268,7 +251,8 @@ namespace SharpNeat.Domains.EasyChange
         /// </summary>
         public IGenomeFactory<NeatGenome> CreateGenomeFactory()
         {
-            // Inicializo el dataloader
+            // Initialize the dataloader. This is done here because the genomes must be created with a certain amount 
+            // of inputs; which is specified in the amount of molecule's caracteristics of each dataset.
             _dataLoader.Initialize( _datasetPath,
                                     _normalizeData,
                                     _normalizeRange,
@@ -334,7 +318,7 @@ namespace SharpNeat.Domains.EasyChange
             // that were in the population in previous generations (elite genomes). This is determined by examining each genome's evaluation info object.
             IGenomeListEvaluator<NeatGenome> selectiveEvaluator = new SelectiveGenomeListEvaluator<NeatGenome>(
                                                                                     innerEvaluator,
-                                                                                    SelectiveGenomeListEvaluator<NeatGenome>.CreatePredicate_CheckforTrainingStatus(ea,_maxGen));
+                                                                                    SelectiveGenomeListEvaluator<NeatGenome>.CreatePredicate_CheckForTrainingStatus(ea,_maxGen));
             
             // Initialize the evolution algorithm.
             ea.Initialize(selectiveEvaluator, genomeFactory, genomeList);

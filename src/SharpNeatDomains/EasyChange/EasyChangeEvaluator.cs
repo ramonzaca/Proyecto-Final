@@ -34,11 +34,10 @@ namespace SharpNeat.Domains.EasyChange
         bool _trainingMode;
         static int _maxGen;
         static List<double[]> _moleculeCaracteristics;
-        static int _totalImageCount;
-        static int _pixelCount; // Todos las moléculas tienen la misma cantidad de características
-        static double[] _allIdentifiers;
-        static List<double[]> _allImages;
-        static bool[] _testClases;
+        static int _moleculesCount;
+        static int _caracteristicsCount; 
+        static List<double[]> _moleculesData;
+        static bool[] _moleculesResults;
         static int _separation;
         static int _fitnessFunction;
 
@@ -52,12 +51,11 @@ namespace SharpNeat.Domains.EasyChange
             _maxGen = maxGen;
             _stopConditionSatisfied = false;
             _moleculeCaracteristics = dataLoader.MoleculeCaracteristics;
-            _totalImageCount = dataLoader.TotalImageCount;
-            _pixelCount = dataLoader.PixelCount;
-            _allIdentifiers = dataLoader.AllIdentifiers;
-            _allImages = dataLoader.AllImages;
-            _testClases = dataLoader.TestClases;
-            double temp = _totalImageCount * (1 - testPorcentage);
+            _moleculesCount = dataLoader.MoleculesCount;
+            _caracteristicsCount = dataLoader.CaracteristicsCount;
+            _moleculesData = dataLoader.MoleculesData;
+            _moleculesResults = dataLoader.MoleculesResults;
+            double temp = _moleculesCount * (1 - testPorcentage);
             _separation = (int)temp;
             _fitnessFunction = fitnessFunction;
 
@@ -103,6 +101,9 @@ namespace SharpNeat.Domains.EasyChange
 
         #endregion
 
+        /// <summary>
+        /// Fitness function case: Accuracy
+        /// </summary>
         private FitnessInfo Accuracy(IBlackBox box)
         {
             double fitness = 0.0;
@@ -111,19 +112,20 @@ namespace SharpNeat.Domains.EasyChange
             ISignalArray outputArr = box.OutputSignalArray;
             _evalCount++;
 
+            // If it should analize the training or the test data.
             if (_ea.CurrentGeneration == _maxGen + 1)
             {
                 _trainingMode = false;
             }
 
+            // Training mode case
             if (_trainingMode)
             {
-
                 for (int i = 0; i < _separation; i++)
                 {
-                    for (int j = 0; j < _pixelCount; j++)
+                    for (int j = 0; j < _caracteristicsCount; j++)
                     {
-                        inputArr[j] = _allImages[i][j];
+                        inputArr[j] = _moleculesData[i][j];
                     }
 
                     // Activate the black box.
@@ -137,9 +139,8 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && _testClases[i] || output < 0.5 && !_testClases[i])
+                    if ((output >= 0.5 && _moleculesResults[i]) || (output < 0.5 && !_moleculesResults[i]))
                         fitness += 1.0;
-
 
                     // Reset black box state ready for next test case.
                     box.ResetState();
@@ -149,8 +150,11 @@ namespace SharpNeat.Domains.EasyChange
                 fitness *= 100;
                 return new FitnessInfo(fitness, fitness);
             }
+
+            // Test Case
             else
             {
+                // Controls if the stop condition is satisfied
                 if (_ea.CurrentGeneration == _maxGen + 2)
                 {
                     _stopConditionSatisfied = true;
@@ -158,11 +162,11 @@ namespace SharpNeat.Domains.EasyChange
                 }
                 else
                 {
-                    for (int t = _separation; t < _totalImageCount; t++)
+                    for (int t = _separation; t < _moleculesCount; t++)
                     {
-                        for (int j = 0; j < _pixelCount; j++)
+                        for (int j = 0; j < _caracteristicsCount; j++)
                         {
-                            inputArr[j] = _allImages[t][j];
+                            inputArr[j] = _moleculesData[t][j];
                         }
 
                         // Activate the black box.
@@ -176,7 +180,7 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && _testClases[t] || output < 0.5 && !_testClases[t])
+                        if (output >= 0.5 && _moleculesResults[t] || output < 0.5 && !_moleculesResults[t])
                             fitness += 1.0;
 
 
@@ -184,13 +188,17 @@ namespace SharpNeat.Domains.EasyChange
                         box.ResetState();
                     }
 
-                    fitness /= (_totalImageCount - _separation);
+                    fitness /= (_moleculesCount - _separation);
                     fitness *= 100;
                     return new FitnessInfo(fitness, fitness);
                 }
             }
         }
 
+        /// <summary>
+        /// Fitness function case: EscalatedAccuracy. Any correct answer's weight is the inverse of the amount of 
+        /// cases of that type in the dataset.
+        /// </summary>
         private FitnessInfo EscalatedAccuracy(IBlackBox box)
         {
             double fitness = 0.0;
@@ -201,26 +209,27 @@ namespace SharpNeat.Domains.EasyChange
             int positives = 0;
             int negatives = 0;
 
+            // If it should analize the training or the test data.
             if (_ea.CurrentGeneration == _maxGen + 1)
             {
                 _trainingMode = false;
             }
 
+            // Training mode case
             if (_trainingMode) {
-
                 
+                // Counts the amount of each classes cases.
                 for (int o = 0; o < _separation; o++)
-                    if (_testClases[o])
+                    if (_moleculesResults[o])
                         positives++;
                     else
                         negatives++;
-                        
                 
                 for (int i = 0; i < _separation; i++)
                 {
-                    for (int j = 0; j < _pixelCount; j++)
+                    for (int j = 0; j < _caracteristicsCount; j++)
                     {
-                        inputArr[j] = _allImages[i][j];
+                        inputArr[j] = _moleculesData[i][j];
                     }
 
                     // Activate the black box.
@@ -234,9 +243,9 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && _testClases[i])
+                    if (output >= 0.5 && _moleculesResults[i])
                         fitness += 1.0/positives;
-                    if (output < 0.5 && !_testClases[i])
+                    if (output < 0.5 && !_moleculesResults[i])
                         fitness += 1.0/negatives;
                               
 
@@ -245,30 +254,32 @@ namespace SharpNeat.Domains.EasyChange
                     box.ResetState();
                 }
 
-                //fitness /= separation;
                 fitness *= 50;
                 return new FitnessInfo(fitness, fitness);
             }
+            // Test Case
             else
             {
-              if (_ea.CurrentGeneration == _maxGen + 2)
+                // Controls if the stop condition is satisfied
+                if (_ea.CurrentGeneration == _maxGen + 2)
                 {
                     _stopConditionSatisfied = true;
                     return FitnessInfo.Zero;
                 }
               else
                 {
-                    for (int p = _separation; p < _totalImageCount; p++)
-                        if (_testClases[p])
+                    // Counts the amount of each classes cases.
+                    for (int p = _separation; p < _moleculesCount; p++)
+                        if (_moleculesResults[p])
                             positives++;
                         else
                             negatives++;
 
-                    for (int t = _separation; t < _totalImageCount; t++)
+                    for (int t = _separation; t < _moleculesCount; t++)
                     {
-                        for (int j = 0; j < _pixelCount; j++)
+                        for (int j = 0; j < _caracteristicsCount; j++)
                         {
-                            inputArr[j] = _allImages[t][j];
+                            inputArr[j] = _moleculesData[t][j];
                         }
 
                         // Activate the black box.
@@ -282,9 +293,9 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && _testClases[t])
+                        if (output >= 0.5 && _moleculesResults[t])
                             fitness += 1.0 / positives;
-                        if (output < 0.5 && !_testClases[t])
+                        if (output < 0.5 && !_moleculesResults[t])
                             fitness += 1.0 / negatives;
 
 
@@ -292,7 +303,6 @@ namespace SharpNeat.Domains.EasyChange
                         box.ResetState();
                     }
 
-                    //fitness /= (_totalImageCount - separation);
                     fitness *= 50;
                     return new FitnessInfo(fitness, fitness);
                 }

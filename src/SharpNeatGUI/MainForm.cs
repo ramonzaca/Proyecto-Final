@@ -112,21 +112,20 @@ namespace SharpNeatGUI
         private void InitExperiment()
         {
             List<ExperimentInfo> expInfoList = new List<ExperimentInfo>();
-            // Find all experiment config data files in the current directory (*.experiments.xml)
+
+            // Find all experiment config data files in the current directory (*.experiments.xml). In this case, there only one.
             foreach (string filename in Directory.EnumerateFiles(".", "*.experiments.xml"))
             {
-                expInfoList = ExperimentInfo.ReadExperimentXml(filename);
-                
+                expInfoList = ExperimentInfo.ReadExperimentXml(filename);                
             }
 
+            // Creates an EasyChange experiment.
             ExperimentInfo expInfo = expInfoList[0];
-
-            Assembly assembly = Assembly.LoadFrom(expInfo.AssemblyPath);
-            
+            Assembly assembly = Assembly.LoadFrom(expInfo.AssemblyPath);            
             _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as EasyChangeExperiment;
             _selectedExperiment.Initialize(expInfo.Name, expInfo.XmlConfig);
 
-            // Load default datasets
+            // Load default datasets.
             foreach (string dataset in Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/Data/"))
             {
               
@@ -137,11 +136,12 @@ namespace SharpNeatGUI
             cmbExperiments.SelectedIndex = 0;
             btnLoadDomainDefaults_Click(null, null);
 
-
+            // Loads the different types of fitness and selects the first as default.
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Accuracy", 0));
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Escalated Accuracy", 1));
             cmbFitnessFnc.SelectedIndex = 0;
 
+            // Creates a predictor.
             _predictor = new EasyChangePredictor(_selectedExperiment);
 
         }
@@ -1722,12 +1722,97 @@ namespace SharpNeatGUI
 
         #endregion
 
+        #region GUI Wiring [Evaluation]
+
+        private void btnEvaluate_Click(object sender, EventArgs e)
+        {
+
+            // Checks if the predictor is awaiting.
+            if (_predictor.StatusCompleted)
+            {
+                txtPredictionStatus.Text = "Ready to begin";
+                txtPredictionStatus.BackColor = Color.Red;
+                btnEvaluate.Text = "Evaluate";
+                _predictor.StatusCompleted = false;
+            }
+            else
+            {
+                if (_predictor.GenomePath == "" || _predictor.GenomePath == null)
+                {
+                    __log.WarnFormat("No genome or population loaded. Specify genome or population.");
+                    return;
+                }
+                if (_predictor.DatasetPath == "" || _predictor.DatasetPath == null)
+                {
+                    __log.WarnFormat("No dataset loaded. Specify dataset to predict.");
+                    return;
+                }
+                if (txtPredictionFilePath.Text == "")
+                {
+                    __log.WarnFormat("No prediction filename specified. Write the name of the prediction file.");
+                    return;
+                }
+
+                _predictor.loadPopulation();
+
+                if (_predictor.GenomeList.Count == 0)
+                {
+                    __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
+                    return;
+                }
+
+                txtPredictionStatus.Text = "Predicting";
+                txtPredictionStatus.BackColor = Color.LightBlue;
+
+                try
+                {
+                    _predictor.Predict(txtPredictionFilePath.Text, chBoxNormalizeData.Checked, ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange));
+                }
+                catch (System.IO.IOException)
+                {
+                    __log.WarnFormat("Enable to proceed. \"{0}\" is currently being used.", txtPredictionFilePath.Text);
+                    txtPredictionStatus.Text = "Ready to begin";
+                    txtPredictionStatus.BackColor = Color.Red;
+                    return;
+                }
+                txtPredictionStatus.Text = "Prediction Completed";
+                txtPredictionStatus.BackColor = Color.Green;
+                btnEvaluate.Text = "Restart";
+                _predictor.StatusCompleted = true;
+
+            }
+        }
+
+        private void btnLoadGenome_Click(object sender, EventArgs e)
+        {
+            string genFilePath = SelectFileToOpen("Load genome or population", "gnm.xml | pop.xml", "(*.gnm.xml)|*.gnm.xml|(*.pop.xml)|*.pop.xml");
+            if (string.IsNullOrEmpty(genFilePath))
+            {
+                return;
+            }
+            _predictor.GenomePath = genFilePath;
+            txtLoadGenomePath.Text = genFilePath.Split('\\').Last();
+        }
+
+        private void btnLoadDataset_Click(object sender, EventArgs e)
+        {
+            string datasetFilePath = SelectFileToOpen("Load dataset", "csv", "(*.csv)|*.csv");
+            if (string.IsNullOrEmpty(datasetFilePath))
+            {
+                return;
+            }
+            _predictor.DatasetPath = datasetFilePath;
+            txtLoadDatasetPath.Text = datasetFilePath.Split('\\').Last();
+        }
+
+        #endregion
+
         #region Private Methods [Misc Helper Methods]
 
-		/// <summary>
-		/// Ask the user for a filename / path.
-		/// </summary>
-		private string SelectFileToOpen(string dialogTitle, string fileExtension, string filter)
+        /// <summary>
+        /// Ask the user for a filename / path.
+        /// </summary>
+        private string SelectFileToOpen(string dialogTitle, string fileExtension, string filter)
 		{
 			OpenFileDialog oDialog = new OpenFileDialog();
 			oDialog.AddExtension = true;
@@ -1926,87 +2011,5 @@ namespace SharpNeatGUI
 
         #endregion
        
-        #region GUI Wiring [Evaluation]
-
-        private void btnEvaluate_Click(object sender, EventArgs e)
-        {
-            if (_predictor.StatusCompleted)
-            {
-                txtPredictionStatus.Text = "Ready to begin";
-                txtPredictionStatus.BackColor = Color.Red;
-                btnEvaluate.Text = "Evaluate";
-                _predictor.StatusCompleted = false;
-
-            }
-            else
-            {
-                if (_predictor.GenomePath == "" || _predictor.GenomePath == null)
-                {
-                    __log.WarnFormat("No genome or population loaded. Specify genome or population.");
-                    return;
-                }
-                if (_predictor.DatasetPath == "" || _predictor.DatasetPath == null)
-                {
-                    __log.WarnFormat("No dataset loaded. Specify dataset to predict.");
-                    return;
-                }
-                if (txtPredictionFilePath.Text == "")
-                {
-                    __log.WarnFormat("No prediction filename specified. Write the name of the prediction file.");
-                    return;
-                }
-
-                _predictor.loadPopulation();
-
-                if (_predictor.GenomeList.Count == 0)
-                {
-                    __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
-                    return;
-                }
-
-                txtPredictionStatus.Text = "Predicting";
-                txtPredictionStatus.BackColor = Color.LightBlue;
-
-                try
-                {
-                    _predictor.Predict(txtPredictionFilePath.Text, chBoxNormalizeData.Checked, ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange));
-                }catch (System.IO.IOException)
-                {
-                    __log.WarnFormat("Enable to proceed. \"{0}\" is currently being used.", txtPredictionFilePath.Text);
-                    txtPredictionStatus.Text = "Ready to begin";
-                    txtPredictionStatus.BackColor = Color.Red;
-                    return;
-                }
-                txtPredictionStatus.Text = "Prediction Completed";
-                txtPredictionStatus.BackColor = Color.Green;
-                btnEvaluate.Text = "Restart";
-                _predictor.StatusCompleted = true;
-
-            }
-        }
-
-        private void btnLoadGenome_Click(object sender, EventArgs e)
-        {
-            string genFilePath = SelectFileToOpen("Load genome or population", "gnm.xml | pop.xml", "(*.gnm.xml)|*.gnm.xml|(*.pop.xml)|*.pop.xml");
-            if (string.IsNullOrEmpty(genFilePath))
-            {
-                return;
-            }
-            _predictor.GenomePath = genFilePath;
-            txtLoadGenomePath.Text = genFilePath.Split('\\').Last();
-        }
-
-        private void btnLoadDataset_Click(object sender, EventArgs e)
-        {
-            string datasetFilePath = SelectFileToOpen("Load dataset", "csv", "(*.csv)|*.csv");
-            if (string.IsNullOrEmpty(datasetFilePath))
-            {
-                return;
-            }
-            _predictor.DatasetPath = datasetFilePath;
-            txtLoadDatasetPath.Text = datasetFilePath.Split('\\').Last();
-        }
-
-        #endregion
     }
 }
