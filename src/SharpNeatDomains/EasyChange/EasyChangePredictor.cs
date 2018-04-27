@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SharpNeat.Core;
 using SharpNeat.Genomes.Neat;
 using SharpNeat.Phenomes;
@@ -14,11 +16,12 @@ namespace SharpNeat.Domains.EasyChange
         string _genomePath;
         string _datasetPath;
         string _predictionPath;
-        IGenomeDecoder<NeatGenome, IBlackBox> _decoder;
+        EasyChangeExperiment _experiment;
         bool _statusCompleted;
+        List<NeatGenome> _genomeList;
 
-        public EasyChangePredictor(IGenomeDecoder<NeatGenome, IBlackBox> Decoder) {
-            _decoder = Decoder;
+        public EasyChangePredictor(EasyChangeExperiment experiment) {
+            _experiment = experiment;
             _statusCompleted = false;
         }
 
@@ -46,48 +49,93 @@ namespace SharpNeat.Domains.EasyChange
             set { _predictionPath = value; }
         }
 
-        public int Predict(List<NeatGenome> genomeList, double[] inputs)
+        public List<NeatGenome> GenomeList
+        {
+            get { return _genomeList; }
+        }
+
+        public void loadPopulation()
+        {
+            using (XmlReader xr = XmlReader.Create(_genomePath))
+            {
+                _genomeList = _experiment.LoadPopulation(xr);
+            }
+        }
+
+        public int Predict(string predictionFilePath, bool normalizeData,int normalizeRange)
         {
             double output;
-            double voteYes = 0;
-            double voteNo = 0;
-            for (int i = 0; i < genomeList.Count; i++)
+            double voteYes;
+            double voteNo;
+
+            List<double[]> valuesFROMcsv = EasyChangeDataLoader.loadDataset(_datasetPath);
+
+            StreamWriter writer = new StreamWriter("Predicciones/" + predictionFilePath);
+
+            // Normalizado de la informacion
+            if (normalizeData)
             {
-                IBlackBox box = _decoder.Decode(genomeList[i]);
-                ISignalArray inputArr = box.InputSignalArray;
-                ISignalArray outputArr = box.OutputSignalArray;
-
-                for (int j = 0; j < inputs.Length; j++)
+                double[] secArray = new double[valuesFROMcsv.Count];
+                for (int i = 0; i < valuesFROMcsv[0].Length; i++) // No normalizar la salida
                 {
-                    inputArr[j] = inputs[j];
+                    for (int j = 0; j < valuesFROMcsv.Count; j++)
+                    {
+                        secArray[j] = valuesFROMcsv[j][i];
+                    }
+                    var normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, -normalizeRange, normalizeRange);
+                    for (int j = 0; j < valuesFROMcsv.Count; j++)
+                    {
+                        valuesFROMcsv[j][i] = normalizedArray[j];
+                    }
+
                 }
-
-                // Activate the black box.
-                box.Activate();
-                if (!box.IsStateValid)
-                {   // Any black box that gets itself into an invalid state is unlikely to be
-                    // any good, so let's just exit here.
-                    return -1;
-                }
-
-                // Read output signal.
-                output = outputArr[0];
-
-                // Reset black box state ready for next test case.
-                box.ResetState();
-
-
-                if (output >= 0.5)
-                    voteYes += 1;
-                else
-                    voteNo += 1;
             }
-            if (voteYes > voteNo)
-                return 1;
-            else if (voteYes < voteNo)
-                return 0;
-            else
-                return -1;
+
+            foreach (double[] inputs in valuesFROMcsv)
+            {
+                voteNo = 0;
+                voteYes = 0;
+                for (int i = 0; i < _genomeList.Count; i++)
+                {
+                    IBlackBox box;
+                    if (null == _genomeList[i].CachedPhenome)
+                        _genomeList[i].CachedPhenome = _experiment.CreateGenomeDecoder().Decode(_genomeList[i]);
+                    box = (IBlackBox)_genomeList[i].CachedPhenome;
+                    ISignalArray inputArr = box.InputSignalArray;
+                    ISignalArray outputArr = box.OutputSignalArray;
+
+                    for (int j = 0; j < inputs.Length; j++)
+                    {
+                        inputArr[j] = inputs[j];
+                    }
+
+                    // Activate the black box.
+                    box.Activate();
+                    if (box.IsStateValid)
+                    {   
+
+                        // Read output signal.
+                        output = outputArr[0];
+
+                        // Reset black box state ready for next test case.
+                        box.ResetState();
+
+
+                        if (output >= 0.5)
+                            voteYes += 1;
+                        else
+                            voteNo += 1;
+                    }
+                }
+                if (voteYes > voteNo)
+                    writer.WriteLine("1");
+                else if (voteYes < voteNo)
+                    writer.WriteLine("0");
+                else
+                    writer.WriteLine("Inconclusive");
+            }
+            writer.Close();
+            return 1;
         }
 
     }

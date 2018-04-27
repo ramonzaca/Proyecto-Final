@@ -37,6 +37,7 @@
             // 
             this.zed.Dock = System.Windows.Forms.DockStyle.Fill;
             this.zed.Location = new System.Drawing.Point(0, 0);
+            this.zed.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.zed.Name = "zed";
             this.zed.ScrollGrace = 0D;
             this.zed.ScrollMaxX = 0D;
@@ -45,17 +46,18 @@
             this.zed.ScrollMinX = 0D;
             this.zed.ScrollMinY = 0D;
             this.zed.ScrollMinY2 = 0D;
-            this.zed.Size = new System.Drawing.Size(561, 324);
+            this.zed.Size = new System.Drawing.Size(748, 399);
             this.zed.TabIndex = 0;
             this.zed.UseExtendedPrintDialog = true;
             // 
             // TimeSeriesGraphForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(561, 324);
+            this.ClientSize = new System.Drawing.Size(748, 399);
             this.Controls.Add(this.zed);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "TimeSeriesGraphForm";
             this.Text = "GraphForm";
             this.ResumeLayout(false);

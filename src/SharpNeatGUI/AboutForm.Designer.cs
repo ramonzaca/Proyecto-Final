@@ -48,9 +48,10 @@
             this.pictureBox1.ErrorImage = null;
             this.pictureBox1.Image = global::SharpNeatGUI.Properties.Resources.sharpneat_banner;
             this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(7, 7);
+            this.pictureBox1.Location = new System.Drawing.Point(9, 9);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(497, 142);
+            this.pictureBox1.Size = new System.Drawing.Size(663, 175);
             this.pictureBox1.TabIndex = 7;
             this.pictureBox1.TabStop = false;
             // 
@@ -59,9 +60,10 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 514);
+            this.label1.Location = new System.Drawing.Point(5, 633);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(63, 13);
+            this.label1.Size = new System.Drawing.Size(83, 17);
             this.label1.TabIndex = 8;
             this.label1.Text = "Version Info";
             // 
@@ -72,19 +74,21 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(7, 155);
+            this.tabControl1.Location = new System.Drawing.Point(9, 191);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(500, 357);
+            this.tabControl1.Size = new System.Drawing.Size(667, 439);
             this.tabControl1.TabIndex = 9;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.txtAbout);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(492, 331);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPage1.Size = new System.Drawing.Size(659, 410);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "About";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -94,10 +98,11 @@
             this.txtAbout.BackColor = System.Drawing.Color.White;
             this.txtAbout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtAbout.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAbout.Location = new System.Drawing.Point(3, 3);
+            this.txtAbout.Location = new System.Drawing.Point(4, 4);
+            this.txtAbout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtAbout.Name = "txtAbout";
             this.txtAbout.ReadOnly = true;
-            this.txtAbout.Size = new System.Drawing.Size(486, 325);
+            this.txtAbout.Size = new System.Drawing.Size(651, 402);
             this.txtAbout.TabIndex = 10;
             this.txtAbout.Text = "";
             this.txtAbout.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtAbout_LinkClicked);
@@ -105,10 +110,11 @@
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.txtLicensing);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(492, 331);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabPage2.Size = new System.Drawing.Size(659, 410);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Licensing";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -118,10 +124,11 @@
             this.txtLicensing.BackColor = System.Drawing.Color.White;
             this.txtLicensing.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtLicensing.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLicensing.Location = new System.Drawing.Point(3, 3);
+            this.txtLicensing.Location = new System.Drawing.Point(4, 4);
+            this.txtLicensing.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtLicensing.Name = "txtLicensing";
             this.txtLicensing.ReadOnly = true;
-            this.txtLicensing.Size = new System.Drawing.Size(486, 325);
+            this.txtLicensing.Size = new System.Drawing.Size(651, 402);
             this.txtLicensing.TabIndex = 6;
             this.txtLicensing.Text = "";
             // 
@@ -131,23 +138,25 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtVersionInfo.BackColor = System.Drawing.Color.White;
             this.txtVersionInfo.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtVersionInfo.Location = new System.Drawing.Point(7, 530);
+            this.txtVersionInfo.Location = new System.Drawing.Point(9, 652);
+            this.txtVersionInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtVersionInfo.Name = "txtVersionInfo";
             this.txtVersionInfo.ReadOnly = true;
-            this.txtVersionInfo.Size = new System.Drawing.Size(500, 122);
+            this.txtVersionInfo.Size = new System.Drawing.Size(665, 149);
             this.txtVersionInfo.TabIndex = 11;
             this.txtVersionInfo.Text = "";
             // 
             // AboutForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(519, 664);
+            this.ClientSize = new System.Drawing.Size(692, 817);
             this.Controls.Add(this.txtVersionInfo);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "AboutForm";
             this.Text = "About SharpNEAT";
             this.Load += new System.EventHandler(this.AboutForm_Load);

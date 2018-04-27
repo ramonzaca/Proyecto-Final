@@ -33,6 +33,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.gbxGenomePopulation = new System.Windows.Forms.GroupBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
             this.txtParamInitialConnectionProportion = new System.Windows.Forms.TextBox();
             this.txtParamPopulationSize = new System.Windows.Forms.TextBox();
@@ -86,6 +87,8 @@
             this.btnExperimentInfo = new System.Windows.Forms.Button();
             this.cmbExperiments = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label29 = new System.Windows.Forms.Label();
+            this.txtMaxParallelism = new System.Windows.Forms.TextBox();
             this.chBoxNormalizeData = new System.Windows.Forms.CheckBox();
             this.label33 = new System.Windows.Forms.Label();
             this.cmbFitnessFnc = new System.Windows.Forms.ComboBox();
@@ -168,8 +171,6 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label29 = new System.Windows.Forms.Label();
-            this.txtMaxParallelism = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -242,6 +243,7 @@
             // 
             // gbxGenomePopulation
             // 
+            this.gbxGenomePopulation.Controls.Add(this.progressBar1);
             this.gbxGenomePopulation.Controls.Add(this.label1);
             this.gbxGenomePopulation.Controls.Add(this.txtParamInitialConnectionProportion);
             this.gbxGenomePopulation.Controls.Add(this.txtParamPopulationSize);
@@ -256,6 +258,13 @@
             this.gbxGenomePopulation.TabIndex = 21;
             this.gbxGenomePopulation.TabStop = false;
             this.gbxGenomePopulation.Text = "Genome Population";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(191, 23);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(111, 23);
+            this.progressBar1.TabIndex = 55;
             // 
             // label1
             // 
@@ -302,7 +311,7 @@
             this.txtPopulationStatus.Margin = new System.Windows.Forms.Padding(4);
             this.txtPopulationStatus.Name = "txtPopulationStatus";
             this.txtPopulationStatus.ReadOnly = true;
-            this.txtPopulationStatus.Size = new System.Drawing.Size(291, 23);
+            this.txtPopulationStatus.Size = new System.Drawing.Size(173, 23);
             this.txtPopulationStatus.TabIndex = 50;
             this.txtPopulationStatus.TabStop = false;
             this.txtPopulationStatus.Text = "Population not initialized";
@@ -833,6 +842,25 @@
             this.tabPage2.Text = "Parameters";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(429, 380);
+            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(105, 17);
+            this.label29.TabIndex = 69;
+            this.label29.Text = "Max Parallelism";
+            // 
+            // txtMaxParallelism
+            // 
+            this.txtMaxParallelism.Location = new System.Drawing.Point(362, 376);
+            this.txtMaxParallelism.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMaxParallelism.Name = "txtMaxParallelism";
+            this.txtMaxParallelism.Size = new System.Drawing.Size(63, 22);
+            this.txtMaxParallelism.TabIndex = 68;
+            this.txtMaxParallelism.Text = "7";
+            // 
             // chBoxNormalizeData
             // 
             this.chBoxNormalizeData.AutoSize = true;
@@ -1300,11 +1328,11 @@
             this.txtPredictionStatus.BackColor = System.Drawing.Color.Red;
             this.txtPredictionStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPredictionStatus.ForeColor = System.Drawing.Color.Black;
-            this.txtPredictionStatus.Location = new System.Drawing.Point(127, 53);
+            this.txtPredictionStatus.Location = new System.Drawing.Point(227, 75);
             this.txtPredictionStatus.Margin = new System.Windows.Forms.Padding(4);
             this.txtPredictionStatus.Name = "txtPredictionStatus";
             this.txtPredictionStatus.ReadOnly = true;
-            this.txtPredictionStatus.Size = new System.Drawing.Size(444, 23);
+            this.txtPredictionStatus.Size = new System.Drawing.Size(243, 23);
             this.txtPredictionStatus.TabIndex = 51;
             this.txtPredictionStatus.TabStop = false;
             this.txtPredictionStatus.Text = "Ready to begin";
@@ -1606,25 +1634,6 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(429, 380);
-            this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(105, 17);
-            this.label29.TabIndex = 69;
-            this.label29.Text = "Max Parallelism";
-            // 
-            // txtMaxParallelism
-            // 
-            this.txtMaxParallelism.Location = new System.Drawing.Point(362, 376);
-            this.txtMaxParallelism.Margin = new System.Windows.Forms.Padding(4);
-            this.txtMaxParallelism.Name = "txtMaxParallelism";
-            this.txtMaxParallelism.Size = new System.Drawing.Size(63, 22);
-            this.txtMaxParallelism.TabIndex = 68;
-            this.txtMaxParallelism.Text = "7";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1809,5 +1818,6 @@
         private System.Windows.Forms.CheckBox chBoxNormalizeData;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.TextBox txtMaxParallelism;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }

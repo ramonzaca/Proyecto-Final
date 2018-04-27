@@ -32,6 +32,7 @@ using SharpNeat.Genomes.Neat;
 using SharpNeat.Phenomes;
 using SharpNeat.Utility;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace SharpNeatGUI
 {
@@ -57,7 +58,9 @@ namespace SharpNeatGUI
         double _champGenomeFitness;
         /// <summary>Array of 'nice' colors for chart plots.</summary>
         Color[] _plotColorArr;
+        /// <summary>Predictor to predict a dataset with a certain genome/population.</summary>
         EasyChangePredictor _predictor;
+        bool _onlyOnce = true;
 
         #endregion
 
@@ -90,7 +93,7 @@ namespace SharpNeatGUI
             InitializeComponent();
             Logger.SetListBox(lbxLog);
             XmlConfigurator.Configure(new FileInfo("log4net.properties"));
-            InitProblemDomainList();
+            InitExperiment();
 
             _filenameNumberFormatter = new NumberFormatInfo();
             _filenameNumberFormatter.NumberDecimalSeparator = ",";
@@ -102,10 +105,11 @@ namespace SharpNeatGUI
         }
 
         /// <summary>
-        /// Initialise the problem domain combobox. The list of problem domains is read from an XML file; this 
-        /// allows changes to be made and new domains to be plugged-in without recompiling binaries.
+        /// Initialise the experiment. The list of "available" experiments is read from an XML file. 
+        /// The datasets located in the "Data" folder are loaded as default datasets. To use another 
+        /// dataset use the "Load dataset" option in the File menu.
         /// </summary>
-        private void InitProblemDomainList()
+        private void InitExperiment()
         {
             List<ExperimentInfo> expInfoList = new List<ExperimentInfo>();
             // Find all experiment config data files in the current directory (*.experiments.xml)
@@ -118,17 +122,17 @@ namespace SharpNeatGUI
             ExperimentInfo expInfo = expInfoList[0];
 
             Assembly assembly = Assembly.LoadFrom(expInfo.AssemblyPath);
-            // TODO: Handle non-gui experiments.
+            
             _selectedExperiment = assembly.CreateInstance(expInfo.ClassName) as EasyChangeExperiment;
             _selectedExperiment.Initialize(expInfo.Name, expInfo.XmlConfig);
 
-            // Load cmb
-
-            foreach (string dataset in Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/../../../Data/"))
+            // Load default datasets
+            foreach (string dataset in Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/Data/"))
             {
               
                 cmbExperiments.Items.Add(new ListItem(string.Empty, dataset.Split('/')[dataset.Split('/').Length - 1], dataset));
             }
+
             // Pre-select first item.
             cmbExperiments.SelectedIndex = 0;
             btnLoadDomainDefaults_Click(null, null);
@@ -138,7 +142,7 @@ namespace SharpNeatGUI
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Escalated Accuracy", 1));
             cmbFitnessFnc.SelectedIndex = 0;
 
-            _predictor = new EasyChangePredictor(_selectedExperiment.CreateGenomeDecoder());
+            _predictor = new EasyChangePredictor(_selectedExperiment);
 
         }
 
@@ -146,15 +150,14 @@ namespace SharpNeatGUI
 
         #region GUI Wiring [Experiment Selection + Default Param Loading]
 
+        /// <summary>
+        /// Selection of the dataset to use.
+        /// </summary>
         private void cmbExperiments_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
-                // Se reinicializa el dataloader del experimento con el nuevo path
-                experiment.DatasetPath = ((string) ((ListItem)cmbExperiments.SelectedItem).Data);
+                _selectedExperiment.DatasetPath = ((string) ((ListItem)cmbExperiments.SelectedItem).Data);
                 UpdateGuiState();
             }
             catch (Exception ex)
@@ -175,26 +178,30 @@ namespace SharpNeatGUI
             
         }
 
+        /// <summary>
+        /// Creates a message box with information of the experiment's nature.
+        /// </summary>
         private void btnExperimentInfo_Click(object sender, EventArgs e)
         {
             if(null == cmbExperiments.SelectedItem) {
                 return;
             }
 
-            EasyChangeExperiment experiment = GetSelectedExperiment();
-            if(null != experiment) {
-                MessageBox.Show(experiment.Description);
+            if(null != _selectedExperiment) {
+                MessageBox.Show(_selectedExperiment.Description);
             }
         }
 
+        /// <summary>
+        /// Relaods the experiment's deafult parameters
+        /// </summary>
         private void btnLoadDomainDefaults_Click(object sender, EventArgs e)
         {
             // Dump the experiment's default parameters into the GUI.
-            EasyChangeExperiment experiment = GetSelectedExperiment();
-            txtParamPopulationSize.Text = experiment.DefaultPopulationSize.ToString();
+            txtParamPopulationSize.Text = _selectedExperiment.DefaultPopulationSize.ToString();
 
-            NeatEvolutionAlgorithmParameters eaParams = experiment.NeatEvolutionAlgorithmParameters;
-            NeatGenomeParameters ngParams = experiment.NeatGenomeParameters;
+            NeatEvolutionAlgorithmParameters eaParams = _selectedExperiment.NeatEvolutionAlgorithmParameters;
+            NeatGenomeParameters ngParams = _selectedExperiment.NeatGenomeParameters;
             txtParamInitialConnectionProportion.Text = ngParams.InitialInterconnectionsProportion.ToString();
             txtParamNumberOfSpecies.Text = eaParams.SpecieCount.ToString();
             txtParamElitismProportion.Text = eaParams.ElitismProportion.ToString();
@@ -209,15 +216,12 @@ namespace SharpNeatGUI
             txtParamMutateDeleteConnection.Text = ngParams.DeleteConnectionMutationProbability.ToString();
         }
 
-        private EasyChangeExperiment GetSelectedExperiment()
-        {
-           return _selectedExperiment;
-        }
-
+        /// <summary>
+        /// Selects a different fitness function.
+        /// </summary>
         private void cmbFitnessFnc_SelectedIndexChanged(object sender, EventArgs e)
         {
-            EasyChangeExperiment exp = GetSelectedExperiment();
-            exp.FitnessFunction = cmbFitnessFnc.SelectedIndex;
+            _selectedExperiment.FitnessFunction = cmbFitnessFnc.SelectedIndex;
             UpdateGuiState();
 
         }
@@ -226,6 +230,9 @@ namespace SharpNeatGUI
 
         #region GUI Wiring [Population Init]
 
+        /// <summary>
+        /// Creates a random population of the specified amount of individuals.
+        /// </summary>
         private void btnCreateRandomPop_Click(object sender, EventArgs e)
         {
             // Parse population size and interconnection proportion from GUI fields.
@@ -239,11 +246,10 @@ namespace SharpNeatGUI
                 return;
             }
 
-            EasyChangeExperiment experiment = GetSelectedExperiment();
-            experiment.NeatGenomeParameters.InitialInterconnectionsProportion = initConnProportion.Value;
+            _selectedExperiment.NeatGenomeParameters.InitialInterconnectionsProportion = initConnProportion.Value;
 
             // Create a genome factory appropriate for the experiment.
-            IGenomeFactory<NeatGenome> genomeFactory = experiment.CreateGenomeFactory();
+            IGenomeFactory<NeatGenome> genomeFactory = _selectedExperiment.CreateGenomeFactory();
                 
             // Create an initial population of randomly generated genomes.
             List<NeatGenome> genomeList = genomeFactory.CreateGenomeList(popSize.Value, 0u);
@@ -436,6 +442,7 @@ namespace SharpNeatGUI
             btnLoadGenome.Enabled = true;
             txtPredictionFilePath.Enabled = true;
             txtMaxParallelism.Enabled = true;
+            progressBar1.Value = 0;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -491,9 +498,7 @@ namespace SharpNeatGUI
             btnLoadGenome.Enabled = false;
             txtPredictionFilePath.Enabled = false;
             txtMaxParallelism.Enabled = true;
-
-
-
+            progressBar1.Value = 0;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -659,6 +664,10 @@ namespace SharpNeatGUI
             txtStatsAsexualOffspringCount.Text = string.Format("{0:N0} ({1:P})", stats._asexualOffspringCount, ((double)stats._asexualOffspringCount/(double)totalOffspringCount));
             txtStatsCrossoverOffspringCount.Text = string.Format("{0:N0} ({1:P})", stats._sexualOffspringCount, ((double)stats._sexualOffspringCount/(double)totalOffspringCount));
             txtStatsInterspeciesOffspringCount.Text = string.Format("{0:N0} ({1:P})", stats._interspeciesOffspringCount, ((double)stats._interspeciesOffspringCount/(double)totalOffspringCount));
+            int value = (int)((_ea.CurrentGeneration * 100) / _selectedExperiment.MaxGen);
+            if (value > 100)
+                value = 100;
+            progressBar1.Value = value;
         }
 
         private void UpdateGuiState_ResetStats()
@@ -694,14 +703,11 @@ namespace SharpNeatGUI
 
             try
             {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
                 // Load population of genomes from file.
                 List<NeatGenome> genomeList;
                 using(XmlReader xr = XmlReader.Create(popFilePath)) 
                 {
-                    genomeList = experiment.LoadPopulation(xr);
+                    genomeList = _selectedExperiment.LoadPopulation(xr);
                 }
 
                 if(genomeList.Count == 0) {
@@ -735,14 +741,11 @@ namespace SharpNeatGUI
 
             try
             {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
                 // Load genome from file.
                 List<NeatGenome> genomeList;
                 using(XmlReader xr = XmlReader.Create(filePath)) 
                 {
-                    genomeList = experiment.LoadPopulation(xr);
+                    genomeList = _selectedExperiment.LoadPopulation(xr);
                 }
 
                 if(genomeList.Count == 0) {
@@ -776,14 +779,11 @@ namespace SharpNeatGUI
 
             try
             {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
                 // Load genome from file.
                 List<NeatGenome> genomeList;
                 using(XmlReader xr = XmlReader.Create(popFilePath)) 
                 {
-                    genomeList = experiment.LoadPopulation(xr);
+                    genomeList = _selectedExperiment.LoadPopulation(xr);
                 }
 
                 if(genomeList.Count == 0) {
@@ -810,14 +810,11 @@ namespace SharpNeatGUI
             }
 
             try
-            {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
+            {                
                 // Save genomes to xml file.
                 using(XmlWriter xw = XmlWriter.Create(popFilePath, _xwSettings))
                 {
-                    experiment.SavePopulation(xw, _genomeList);
+                    _selectedExperiment.SavePopulation(xw, _genomeList);
                 }
             }
             catch(Exception ex)
@@ -835,13 +832,10 @@ namespace SharpNeatGUI
 
             try
             {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
                 // Save genome to xml file.
                 using(XmlWriter xw = XmlWriter.Create(filePath, _xwSettings))
                 {
-                    experiment.SavePopulation(xw, new NeatGenome[] {_ea.CurrentChampGenome});
+                    _selectedExperiment.SavePopulation(xw, new NeatGenome[] {_ea.CurrentChampGenome});
                 }
             }
             catch(Exception ex)
@@ -861,11 +855,8 @@ namespace SharpNeatGUI
 
             try
             {
-                // Get the currently selected experiment.
-                EasyChangeExperiment experiment = GetSelectedExperiment();
-
                 // Se reinicializa el dataloader del experimento con el nuevo path
-                experiment.DatasetPath = filePath;            
+                _selectedExperiment.DatasetPath = filePath;            
                 cmbExperiments.Items.Add(new ListItem(string.Empty, filePath.Split('\\')[filePath.Split('\\').Length - 1], filePath));
                 cmbExperiments.SelectedIndex = cmbExperiments.Items.Count - 1 ;
                 UpdateGuiState();
@@ -886,8 +877,7 @@ namespace SharpNeatGUI
 
         private void bestGenomeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EasyChangeExperiment experiment = GetSelectedExperiment();
-            AbstractGenomeView genomeView = experiment.CreateGenomeView();
+            AbstractGenomeView genomeView = _selectedExperiment.CreateGenomeView();
             if(null == genomeView) {
                 return;
             }
@@ -912,14 +902,13 @@ namespace SharpNeatGUI
 
         private void problemDomainToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EasyChangeExperiment experiment = GetSelectedExperiment();
-            AbstractDomainView domainView = experiment.CreateDomainView();
+            AbstractDomainView domainView = _selectedExperiment.CreateDomainView();
             if(null == domainView) {
                 return;
             }
 
             // Create form.
-            _domainForm = new ProblemDomainForm(experiment.Name, domainView, _ea);
+            _domainForm = new ProblemDomainForm(_selectedExperiment.Name, domainView, _ea);
 
             // Attach a event handler to update this main form when the domain form is closed.
             _domainForm.FormClosed += new FormClosedEventHandler(delegate(object senderObj, FormClosedEventArgs eArgs)
@@ -1605,23 +1594,29 @@ namespace SharpNeatGUI
                     UpdateGuiState_EaStats();
 
                     // Write entry to log window.
-                    __log.Info(string.Format("gen={0:N0} bestFitness={1:N6}", _ea.CurrentGeneration, _ea.Statistics._maxFitness));
-
+                    if (_ea.CurrentGeneration > _selectedExperiment.MaxGen && _onlyOnce)
+                    {
+                        __log.Info(string.Format("\nTesting results :"));
+                        __log.Info(string.Format("bestFitness={0:N6}", _ea.Statistics._maxFitness));
+                        _onlyOnce = false;
+                    }
+                    else if (_onlyOnce)
+                    {
+                        // Write entry to log window.
+                        __log.Info(string.Format("gen={0:N0} bestFitness={1:N6}", _ea.CurrentGeneration, _ea.Statistics._maxFitness));
+                    }
                     // Check if we should save the champ genome to a file.
                     NeatGenome champGenome = _ea.CurrentChampGenome;
                     if (chkFileSaveGenomeOnImprovement.Checked && champGenome.EvaluationInfo.Fitness > _champGenomeFitness)
                     {
                         _champGenomeFitness = champGenome.EvaluationInfo.Fitness;
-                        string filename = string.Format(_filenameNumberFormatter, "../../../Champions/{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
+                        string filename = string.Format(_filenameNumberFormatter, "Champions/{0}_{1:0.00}_{2:yyyyMMdd_HHmmss}.gnm.xml",
                                                         txtFileBaseName.Text, _champGenomeFitness, DateTime.Now);
-
-                        // Get the currently selected experiment.
-                        EasyChangeExperiment experiment = GetSelectedExperiment();
 
                         // Save genome to xml file.
                         using (XmlWriter xw = XmlWriter.Create(filename, _xwSettings))
                         {
-                            experiment.SavePopulation(xw, new NeatGenome[] { champGenome });
+                            _selectedExperiment.SavePopulation(xw, new NeatGenome[] { champGenome });
                         }
                     }
                 }));
@@ -1645,38 +1640,37 @@ namespace SharpNeatGUI
                                                         _ea.ComplexityRegulationMode));
                 _logFileWriter.Flush();
             }
-            // Get the currently selected experiment.
-            EasyChangeExperiment exp = GetSelectedExperiment();
 
             //Save Population (Funciona cuando le pinta)
-            if ((_ea.CurrentGeneration % exp.SavePeriod) == 0  && _ea.CurrentGeneration > 0)
+            if ((_ea.CurrentGeneration % _selectedExperiment.SavePeriod) == 0  && _ea.CurrentGeneration > 0)
             {
                
                 NeatAlgorithmStats stats = _ea.Statistics;
-                string file = string.Format(_filenameNumberFormatter, "../../../Poblaciones/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
-                                                _ea.GenomeList.Count, exp.Seed, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
+                string file = string.Format(_filenameNumberFormatter, "Poblaciones/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
+                                                _ea.GenomeList.Count, _selectedExperiment.Seed, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
 
                 // Save genomes to xml file.
                 using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))
                 {
-                    exp.SavePopulation(xw, _genomeList);
+                    _selectedExperiment.SavePopulation(xw, _genomeList);
                 }
             }
 
             //Save best Genome
-            if (_ea.CurrentGeneration == exp.MaxGen)
+            if (_ea.CurrentGeneration == _selectedExperiment.MaxGen)
             {
                 NeatGenome champGenome = _ea.CurrentChampGenome;
                 NeatAlgorithmStats stats = _ea.Statistics;
-                string file = string.Format(_filenameNumberFormatter, "../../../Champions/Fit{0:0.00}_{1:HHmmss_ddMMyyyy}.gnm.xml",
+                string file = string.Format(_filenameNumberFormatter, "Champions/Fit{0:0.00}_{1:HHmmss_ddMMyyyy}.gnm.xml",
                                                 stats._maxFitness, DateTime.Now);
 
                 // Save genome to xml file.
                 using (XmlWriter xw = XmlWriter.Create(file, _xwSettings))
                 {
-                    exp.SavePopulation(xw, new NeatGenome[] { champGenome });
+                    _selectedExperiment.SavePopulation(xw, new NeatGenome[] { champGenome });
                 }
             }
+
         }
 
         void _ea_PausedEvent(object sender, EventArgs e)
@@ -1931,10 +1925,9 @@ namespace SharpNeatGUI
 
 
         #endregion
-
-        
-
+       
         #region GUI Wiring [Evaluation]
+
         private void btnEvaluate_Click(object sender, EventArgs e)
         {
             if (_predictor.StatusCompleted)
@@ -1947,12 +1940,12 @@ namespace SharpNeatGUI
             }
             else
             {
-                if (_predictor.GenomePath == "")
+                if (_predictor.GenomePath == "" || _predictor.GenomePath == null)
                 {
-                    __log.WarnFormat("No genome loaded. Specify genome.");
+                    __log.WarnFormat("No genome or population loaded. Specify genome or population.");
                     return;
                 }
-                if (_predictor.DatasetPath == "")
+                if (_predictor.DatasetPath == "" || _predictor.DatasetPath == null)
                 {
                     __log.WarnFormat("No dataset loaded. Specify dataset to predict.");
                     return;
@@ -1962,54 +1955,28 @@ namespace SharpNeatGUI
                     __log.WarnFormat("No prediction filename specified. Write the name of the prediction file.");
                     return;
                 }
-                EasyChangeExperiment exp = GetSelectedExperiment();
-                List<NeatGenome> genomeList;
-                using (XmlReader xr = XmlReader.Create(_predictor.GenomePath))
-                {
-                    genomeList = exp.LoadPopulation(xr);
-                }
 
-                if (genomeList.Count == 0)
+                _predictor.loadPopulation();
+
+                if (_predictor.GenomeList.Count == 0)
                 {
                     __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
                     return;
                 }
+
                 txtPredictionStatus.Text = "Predicting";
-                txtPredictionStatus.BackColor = Color.Blue;
-                List<double[]> valuesFROMcsv = EasyChangeDataLoader.loadDataset(_predictor.DatasetPath);
+                txtPredictionStatus.BackColor = Color.LightBlue;
 
-                StreamWriter writer = new StreamWriter("../../../Predicciones/" + txtPredictionFilePath.Text);
-
-                if (exp.NormalizeData)
+                try
                 {
-                    double[] secArray = new double[valuesFROMcsv.Count];
-                    for (int i = 0; i < valuesFROMcsv[0].Length; i++) // No normalizar la salida
-                    {
-                        for (int j = 0; j < valuesFROMcsv.Count; j++)
-                        {
-                            secArray[j] = valuesFROMcsv[j][i];
-                        }
-                        var normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, -exp.NormalizeRange, exp.NormalizeRange);
-                        for (int j = 0; j < valuesFROMcsv.Count; j++)
-                        {
-                            valuesFROMcsv[j][i] = normalizedArray[j];
-                        }
-
-                    }
-                }
-                
-                int result;
-                for (int i = 0; i < valuesFROMcsv.Count; i++)
+                    _predictor.Predict(txtPredictionFilePath.Text, chBoxNormalizeData.Checked, ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange));
+                }catch (System.IO.IOException)
                 {
-                    result = _predictor.Predict(genomeList, valuesFROMcsv[i]);
-                    if (result == 1)
-                        writer.WriteLine("1");
-                    else if (result == 0)
-                        writer.WriteLine("0");
-                    else
-                        writer.WriteLine("Inconclusive");
+                    __log.WarnFormat("Enable to proceed. \"{0}\" is currently being used.", txtPredictionFilePath.Text);
+                    txtPredictionStatus.Text = "Ready to begin";
+                    txtPredictionStatus.BackColor = Color.Red;
+                    return;
                 }
-                writer.Close();
                 txtPredictionStatus.Text = "Prediction Completed";
                 txtPredictionStatus.BackColor = Color.Green;
                 btnEvaluate.Text = "Restart";
@@ -2039,9 +2006,7 @@ namespace SharpNeatGUI
             _predictor.DatasetPath = datasetFilePath;
             txtLoadDatasetPath.Text = datasetFilePath.Split('\\').Last();
         }
+
         #endregion
-
-
-
     }
 }
