@@ -171,6 +171,8 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label39 = new System.Windows.Forms.Label();
+            this.txtBatchSize = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -1026,6 +1028,8 @@
             // gbxEAParameters
             // 
             this.gbxEAParameters.BackColor = System.Drawing.Color.Transparent;
+            this.gbxEAParameters.Controls.Add(this.label39);
+            this.gbxEAParameters.Controls.Add(this.txtBatchSize);
             this.gbxEAParameters.Controls.Add(this.label31);
             this.gbxEAParameters.Controls.Add(this.txtSeed);
             this.gbxEAParameters.Controls.Add(this.label24);
@@ -1051,7 +1055,7 @@
             this.gbxEAParameters.Margin = new System.Windows.Forms.Padding(4);
             this.gbxEAParameters.Name = "gbxEAParameters";
             this.gbxEAParameters.Padding = new System.Windows.Forms.Padding(4);
-            this.gbxEAParameters.Size = new System.Drawing.Size(329, 399);
+            this.gbxEAParameters.Size = new System.Drawing.Size(329, 428);
             this.gbxEAParameters.TabIndex = 16;
             this.gbxEAParameters.TabStop = false;
             this.gbxEAParameters.Text = "Evolution Algorithm Parameters";
@@ -1092,7 +1096,7 @@
             this.txtTestPorcentage.Name = "txtTestPorcentage";
             this.txtTestPorcentage.Size = new System.Drawing.Size(63, 22);
             this.txtTestPorcentage.TabIndex = 62;
-            this.txtTestPorcentage.Text = "0.15";
+            this.txtTestPorcentage.Text = "0,15";
             // 
             // label22
             // 
@@ -1634,6 +1638,25 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(75, 391);
+            this.label39.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(152, 17);
+            this.label39.TabIndex = 69;
+            this.label39.Text = "Batch Size Porcentage";
+            // 
+            // txtBatchSize
+            // 
+            this.txtBatchSize.Location = new System.Drawing.Point(8, 387);
+            this.txtBatchSize.Margin = new System.Windows.Forms.Padding(4);
+            this.txtBatchSize.Name = "txtBatchSize";
+            this.txtBatchSize.Size = new System.Drawing.Size(63, 22);
+            this.txtBatchSize.TabIndex = 68;
+            this.txtBatchSize.Text = "0,10";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1819,5 +1842,7 @@
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.TextBox txtMaxParallelism;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.TextBox txtBatchSize;
     }
 }

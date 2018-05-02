@@ -52,6 +52,7 @@ namespace SharpNeat.Domains.EasyChange
         bool _normalizeData;
         int _normalizeRange;
         int _fitnessFunction;
+        double _batchSizePorcentage;
 
 
 
@@ -70,6 +71,11 @@ namespace SharpNeat.Domains.EasyChange
 
         #region Gets
 
+        public double BatchSizePorcentage
+        {
+            get { return _batchSizePorcentage; }
+            set { _batchSizePorcentage = value; }
+        }
         public ParallelOptions ParallelOps
         {
             get { return _parallelOptions; }
@@ -213,8 +219,9 @@ namespace SharpNeat.Domains.EasyChange
             _neatGenomeParams.FeedforwardOnly = _activationScheme.AcyclicNetwork;
             _neatGenomeParams.ActivationFn = LeakyReLU.__DefaultInstance;
             _maxGen = XmlUtils.GetValueAsInt(xmlConfig, "MaxGen");
-            _testPorcentage = (XmlUtils.GetValueAsInt(xmlConfig,"TestPorcentage")*1.0) / 100;
+            _testPorcentage = XmlUtils.GetValueAsInt(xmlConfig,"TestPorcentage");
             _savePeriod = XmlUtils.GetValueAsInt(xmlConfig, "SavePeriod");
+            _batchSizePorcentage = XmlUtils.GetValueAsInt(xmlConfig, "BatchSizePorcentage");
 
         }
 
@@ -306,7 +313,7 @@ namespace SharpNeat.Domains.EasyChange
             NeatEvolutionAlgorithm<NeatGenome> ea = new NeatEvolutionAlgorithm<NeatGenome>(_eaParams, speciationStrategy, complexityRegulationStrategy);
 
             // Create IBlackBox evaluator.
-            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader,_maxGen,_testPorcentage,_fitnessFunction);
+            EasyChangeEvaluator evaluator = new EasyChangeEvaluator(ea,_dataLoader,_maxGen,_testPorcentage,_fitnessFunction, _batchSizePorcentage);
 
             // Create genome decoder. Decodes to a neural network packaged with an activation scheme.
             IGenomeDecoder<NeatGenome, IBlackBox> genomeDecoder =  CreateGenomeDecoder();
@@ -316,12 +323,12 @@ namespace SharpNeat.Domains.EasyChange
             
             // Wrap the list evaluator in a 'selective' evaluator that will only evaluate new genomes. That is, we skip re-evaluating any genomes
             // that were in the population in previous generations (elite genomes). This is determined by examining each genome's evaluation info object.
-            IGenomeListEvaluator<NeatGenome> selectiveEvaluator = new SelectiveGenomeListEvaluator<NeatGenome>(
+            /*IGenomeListEvaluator<NeatGenome> selectiveEvaluator = new SelectiveGenomeListEvaluator<NeatGenome>(
                                                                                     innerEvaluator,
                                                                                     SelectiveGenomeListEvaluator<NeatGenome>.CreatePredicate_CheckForTrainingStatus(ea,_maxGen));
-            
+            */
             // Initialize the evolution algorithm.
-            ea.Initialize(selectiveEvaluator, genomeFactory, genomeList);
+            ea.Initialize(innerEvaluator, genomeFactory, genomeList);
 
             // Finished. Return the evolution algorithm
             return ea;

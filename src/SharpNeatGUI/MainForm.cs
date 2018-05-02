@@ -266,7 +266,7 @@ namespace SharpNeatGUI
 
         private void btnSearchStart_Click(object sender, EventArgs e)
         {
-            if(null != _ea)
+            if (null != _ea)
             {   // Resume existing EA & update GUI state.
                 _ea.StartContinue();
                 UpdateGuiState();
@@ -358,12 +358,13 @@ namespace SharpNeatGUI
             ngParams.AddConnectionMutationProbability = ParseDouble(txtParamMutateAddConnection, ngParams.AddConnectionMutationProbability);
             ngParams.DeleteConnectionMutationProbability = ParseDouble(txtParamMutateDeleteConnection, ngParams.DeleteConnectionMutationProbability);
             _selectedExperiment.MaxGen = ParseInt(txtMaxGen, _selectedExperiment.MaxGen);
-            _selectedExperiment.TestPorcentage = ParseDouble(txtTestPorcentage, _selectedExperiment.TestPorcentage) / 100;
+            _selectedExperiment.TestPorcentage = ParseDouble(txtTestPorcentage, _selectedExperiment.TestPorcentage) ;
             _selectedExperiment.SavePeriod = ParseInt(txtSavePeriod, _selectedExperiment.SavePeriod);
             _selectedExperiment.NormalizeData = chBoxNormalizeData.Checked;
             _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
             _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
             _selectedExperiment.ParallelOps.MaxDegreeOfParallelism = ParseInt(txtMaxParallelism, _selectedExperiment.ParallelOps.MaxDegreeOfParallelism);
+            _selectedExperiment.BatchSizePorcentage = ParseDouble(txtBatchSize, _selectedExperiment.BatchSizePorcentage);
         }
 
         #endregion
@@ -443,6 +444,7 @@ namespace SharpNeatGUI
             txtPredictionFilePath.Enabled = true;
             txtMaxParallelism.Enabled = true;
             progressBar1.Value = 0;
+            txtBatchSize.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -454,6 +456,8 @@ namespace SharpNeatGUI
             savePopulationToolStripMenuItem.Enabled = false;
             saveBestGenomeToolStripMenuItem.Enabled = false;
             toolStripMenuItem1.Enabled = true;
+
+            _onlyOnce = true;
         }
 
         private void UpdateGuiState_PopulationReady()
@@ -499,6 +503,7 @@ namespace SharpNeatGUI
             txtPredictionFilePath.Enabled = false;
             txtMaxParallelism.Enabled = true;
             progressBar1.Value = 0;
+            txtBatchSize.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -510,6 +515,7 @@ namespace SharpNeatGUI
             savePopulationToolStripMenuItem.Enabled = true;
             saveBestGenomeToolStripMenuItem.Enabled = false;
             toolStripMenuItem1.Enabled = false;
+
             
         }
 
@@ -558,6 +564,7 @@ namespace SharpNeatGUI
             btnLoadGenome.Enabled = false;
             txtPredictionFilePath.Enabled = false;
             txtMaxParallelism.Enabled = false;
+            txtBatchSize.Enabled = false;
 
 
             // Logging to file.
@@ -613,6 +620,7 @@ namespace SharpNeatGUI
             txtSeed.Enabled = false;
             cmbFitnessFnc.Enabled = false;
             txtMaxParallelism.Enabled = false;
+            txtBatchSize.Enabled = false;
 
             // Logging to file.
             gbxLogging.Enabled = false;
@@ -1590,18 +1598,20 @@ namespace SharpNeatGUI
             {
                 this.BeginInvoke(new MethodInvoker(delegate ()
                 {
-                    // Update stats on screen.
-                    UpdateGuiState_EaStats();
-
+                    
                     // Write entry to log window.
                     if (_ea.CurrentGeneration > _selectedExperiment.MaxGen && _onlyOnce)
                     {
+                        // Update stats on screen.
+                        UpdateGuiState_EaStats();
                         __log.Info(string.Format("\nTesting results :"));
                         __log.Info(string.Format("bestFitness={0:N6}", _ea.Statistics._maxFitness));
                         _onlyOnce = false;
                     }
                     else if (_onlyOnce)
                     {
+                        // Update stats on screen.
+                        UpdateGuiState_EaStats();
                         // Write entry to log window.
                         __log.Info(string.Format("gen={0:N0} bestFitness={1:N6}", _ea.CurrentGeneration, _ea.Statistics._maxFitness));
                     }
@@ -1641,12 +1651,12 @@ namespace SharpNeatGUI
                 _logFileWriter.Flush();
             }
 
-            //Save Population (Funciona cuando le pinta)
+            // Save Population
             if ((_ea.CurrentGeneration % _selectedExperiment.SavePeriod) == 0  && _ea.CurrentGeneration > 0)
             {
                
                 NeatAlgorithmStats stats = _ea.Statistics;
-                string file = string.Format(_filenameNumberFormatter, "Poblaciones/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
+                string file = string.Format(_filenameNumberFormatter, "Populations/pop{0}_Seed{1}_Gen{2}_Fit{3:0.00}_{4:HHmmss_ddMMyyyy}.pop.xml",
                                                 _ea.GenomeList.Count, _selectedExperiment.Seed, _ea.CurrentGeneration, stats._maxFitness, DateTime.Now);
 
                 // Save genomes to xml file.
@@ -1656,7 +1666,7 @@ namespace SharpNeatGUI
                 }
             }
 
-            //Save best Genome
+            // Save best Genome
             if (_ea.CurrentGeneration == _selectedExperiment.MaxGen)
             {
                 NeatGenome champGenome = _ea.CurrentChampGenome;

@@ -22,8 +22,7 @@ using System.Xml;
 namespace SharpNeat.Domains.EasyChange
 {
     /// <summary>
-    /// Binary 3-Multiplexer task.
-    /// One binary input selects which of two other binary inputs to output. 
+    /// Evaluator for an EasyChange experiment.
     /// </summary>
     public class EasyChangeEvaluator : IPhenomeEvaluator<IBlackBox>
     {
@@ -38,12 +37,13 @@ namespace SharpNeat.Domains.EasyChange
         static int _caracteristicsCount; 
         static List<double[]> _moleculesData;
         static bool[] _moleculesResults;
-        static int _separation;
+        static int _split;
         static int _fitnessFunction;
+        static double _batchSize;
 
         #region IPhenomeEvaluator<IBlackBox> Members
 
-        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage, int fitnessFunction)
+        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage, int fitnessFunction,double batchSizePorcentage)
         {
             
             _ea = ea;
@@ -56,8 +56,10 @@ namespace SharpNeat.Domains.EasyChange
             _moleculesData = dataLoader.MoleculesData;
             _moleculesResults = dataLoader.MoleculesResults;
             double temp = _moleculesCount * (1 - testPorcentage);
-            _separation = (int)temp;
+            _split = (int)temp;
             _fitnessFunction = fitnessFunction;
+            temp = _split * batchSizePorcentage;
+            _batchSize = (int) temp;
 
         }
         /// <summary>
@@ -121,11 +123,13 @@ namespace SharpNeat.Domains.EasyChange
             // Training mode case
             if (_trainingMode)
             {
-                for (int i = 0; i < _separation; i++)
+                Random rnd = new Random();
+                int index = rnd.Next(0, _split);
+                for (int i = 0; i < _batchSize; i++)
                 {
                     for (int j = 0; j < _caracteristicsCount; j++)
                     {
-                        inputArr[j] = _moleculesData[i][j];
+                        inputArr[j] = _moleculesData[(i + index) % _split][j];
                     }
 
                     // Activate the black box.
@@ -139,14 +143,14 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if ((output >= 0.5 && _moleculesResults[i]) || (output < 0.5 && !_moleculesResults[i]))
+                    if ((output >= 0.5 && _moleculesResults[(i + index) % _split]) || (output < 0.5 && !_moleculesResults[(i + index) % _split]))
                         fitness += 1.0;
 
                     // Reset black box state ready for next test case.
                     box.ResetState();
                 }
 
-                fitness /= _separation;
+                fitness /= _batchSize;
                 fitness *= 100;
                 return new FitnessInfo(fitness, fitness);
             }
@@ -162,7 +166,7 @@ namespace SharpNeat.Domains.EasyChange
                 }
                 else
                 {
-                    for (int t = _separation; t < _moleculesCount; t++)
+                    for (int t = _split; t < _moleculesCount; t++)
                     {
                         for (int j = 0; j < _caracteristicsCount; j++)
                         {
@@ -188,7 +192,7 @@ namespace SharpNeat.Domains.EasyChange
                         box.ResetState();
                     }
 
-                    fitness /= (_moleculesCount - _separation);
+                    fitness /= (_moleculesCount - _split);
                     fitness *= 100;
                     return new FitnessInfo(fitness, fitness);
                 }
@@ -209,6 +213,7 @@ namespace SharpNeat.Domains.EasyChange
             int positives = 0;
             int negatives = 0;
 
+
             // If it should analize the training or the test data.
             if (_ea.CurrentGeneration == _maxGen + 1)
             {
@@ -217,19 +222,21 @@ namespace SharpNeat.Domains.EasyChange
 
             // Training mode case
             if (_trainingMode) {
-                
+                Random rnd = new Random();
+                int index = rnd.Next(0, _split);
+
                 // Counts the amount of each classes cases.
-                for (int o = 0; o < _separation; o++)
-                    if (_moleculesResults[o])
+                for (int o = 0; o < _batchSize; o++)
+                    if (_moleculesResults[(o+index)%_split])
                         positives++;
                     else
                         negatives++;
                 
-                for (int i = 0; i < _separation; i++)
+                for (int i = 0; i < _batchSize; i++)
                 {
                     for (int j = 0; j < _caracteristicsCount; j++)
                     {
-                        inputArr[j] = _moleculesData[i][j];
+                        inputArr[j] = _moleculesData[(i + index)% _split][j];
                     }
 
                     // Activate the black box.
@@ -243,9 +250,9 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && _moleculesResults[i])
+                    if (output >= 0.5 && _moleculesResults[(i + index) % _split])
                         fitness += 1.0/positives;
-                    if (output < 0.5 && !_moleculesResults[i])
+                    if (output < 0.5 && !_moleculesResults[(i + index) % _split])
                         fitness += 1.0/negatives;
                               
 
@@ -269,13 +276,13 @@ namespace SharpNeat.Domains.EasyChange
               else
                 {
                     // Counts the amount of each classes cases.
-                    for (int p = _separation; p < _moleculesCount; p++)
+                    for (int p = _split; p < _moleculesCount; p++)
                         if (_moleculesResults[p])
                             positives++;
                         else
                             negatives++;
 
-                    for (int t = _separation; t < _moleculesCount; t++)
+                    for (int t = _split; t < _moleculesCount; t++)
                     {
                         for (int j = 0; j < _caracteristicsCount; j++)
                         {

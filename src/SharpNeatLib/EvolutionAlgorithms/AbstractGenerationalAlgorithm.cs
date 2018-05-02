@@ -133,7 +133,7 @@ namespace SharpNeat.EvolutionAlgorithms
             _genomeList = genomeList;
             _populationSize = _genomeList.Count;
             _runState = RunState.Ready;
-            _updateScheme = new UpdateScheme(new TimeSpan(0, 0, 1));
+            _updateScheme = new UpdateScheme(1);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace SharpNeat.EvolutionAlgorithms
             _genomeList = genomeFactory.CreateGenomeList(populationSize, _currentGeneration);
             _populationSize = populationSize;
             _runState = RunState.Ready;
-            _updateScheme = new UpdateScheme(new TimeSpan(0, 0, 1));
+            _updateScheme = new UpdateScheme(1);
         }
 
         /// <summary>

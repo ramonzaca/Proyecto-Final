@@ -20,6 +20,7 @@
 		  <MaxGen>150000</MaxGen>
 		  <SavePeriod>500</SavePeriod>
 		  <TestPorcentage>15</TestPorcentage>
+		  <BatchSizePorcentage>10</BatchSizePorcentage>
 		<Description>
 EasyChange is a classification tool.
 A population is created in accordance to a domain, specifying the amount of inputs to the network.
