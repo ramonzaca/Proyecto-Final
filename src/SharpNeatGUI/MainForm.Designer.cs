@@ -106,6 +106,8 @@
             this.txtParamMutateAddNode = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
             this.gbxEAParameters = new System.Windows.Forms.GroupBox();
+            this.label39 = new System.Windows.Forms.Label();
+            this.txtBatchSize = new System.Windows.Forms.TextBox();
             this.label31 = new System.Windows.Forms.Label();
             this.txtSeed = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
@@ -147,7 +149,6 @@
             this.saveBestGenomeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bestGenomeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.problemDomainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeSeriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fitnessBestMeansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,8 +172,7 @@
             this.btnCopyLogToClipboard = new System.Windows.Forms.Button();
             this.lbxLog = new System.Windows.Forms.ListBox();
             this.populationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label39 = new System.Windows.Forms.Label();
-            this.txtBatchSize = new System.Windows.Forms.TextBox();
+            this.chBoxSaveStats = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -826,6 +826,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.chBoxSaveStats);
             this.tabPage2.Controls.Add(this.label29);
             this.tabPage2.Controls.Add(this.txtMaxParallelism);
             this.tabPage2.Controls.Add(this.chBoxNormalizeData);
@@ -847,7 +848,7 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(429, 380);
+            this.label29.Location = new System.Drawing.Point(427, 346);
             this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(105, 17);
@@ -856,7 +857,7 @@
             // 
             // txtMaxParallelism
             // 
-            this.txtMaxParallelism.Location = new System.Drawing.Point(362, 376);
+            this.txtMaxParallelism.Location = new System.Drawing.Point(360, 342);
             this.txtMaxParallelism.Margin = new System.Windows.Forms.Padding(4);
             this.txtMaxParallelism.Name = "txtMaxParallelism";
             this.txtMaxParallelism.Size = new System.Drawing.Size(63, 22);
@@ -878,7 +879,7 @@
             // 
             // label33
             // 
-            this.label33.Location = new System.Drawing.Point(552, 330);
+            this.label33.Location = new System.Drawing.Point(552, 313);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(118, 20);
@@ -889,7 +890,7 @@
             // 
             this.cmbFitnessFnc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFitnessFnc.DropDownWidth = 300;
-            this.cmbFitnessFnc.Location = new System.Drawing.Point(360, 327);
+            this.cmbFitnessFnc.Location = new System.Drawing.Point(360, 310);
             this.cmbFitnessFnc.Margin = new System.Windows.Forms.Padding(4);
             this.cmbFitnessFnc.Name = "cmbFitnessFnc";
             this.cmbFitnessFnc.Size = new System.Drawing.Size(184, 24);
@@ -1059,6 +1060,25 @@
             this.gbxEAParameters.TabIndex = 16;
             this.gbxEAParameters.TabStop = false;
             this.gbxEAParameters.Text = "Evolution Algorithm Parameters";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(75, 391);
+            this.label39.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(152, 17);
+            this.label39.TabIndex = 69;
+            this.label39.Text = "Batch Size Porcentage";
+            // 
+            // txtBatchSize
+            // 
+            this.txtBatchSize.Location = new System.Drawing.Point(8, 387);
+            this.txtBatchSize.Margin = new System.Windows.Forms.Padding(4);
+            this.txtBatchSize.Name = "txtBatchSize";
+            this.txtBatchSize.Size = new System.Drawing.Size(63, 22);
+            this.txtBatchSize.TabIndex = 68;
+            this.txtBatchSize.Text = "0,10";
             // 
             // label31
             // 
@@ -1434,7 +1454,6 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bestGenomeToolStripMenuItem,
-            this.problemDomainToolStripMenuItem,
             this.graphsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
@@ -1443,16 +1462,9 @@
             // bestGenomeToolStripMenuItem
             // 
             this.bestGenomeToolStripMenuItem.Name = "bestGenomeToolStripMenuItem";
-            this.bestGenomeToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.bestGenomeToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.bestGenomeToolStripMenuItem.Text = "Best Genome";
             this.bestGenomeToolStripMenuItem.Click += new System.EventHandler(this.bestGenomeToolStripMenuItem_Click);
-            // 
-            // problemDomainToolStripMenuItem
-            // 
-            this.problemDomainToolStripMenuItem.Name = "problemDomainToolStripMenuItem";
-            this.problemDomainToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
-            this.problemDomainToolStripMenuItem.Text = "Problem Domain";
-            this.problemDomainToolStripMenuItem.Click += new System.EventHandler(this.problemDomainToolStripMenuItem_Click);
             // 
             // graphsToolStripMenuItem
             // 
@@ -1461,7 +1473,7 @@
             this.rankPlotsToolStripMenuItem,
             this.distributionPlotsToolStripMenuItem});
             this.graphsToolStripMenuItem.Name = "graphsToolStripMenuItem";
-            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(197, 26);
+            this.graphsToolStripMenuItem.Size = new System.Drawing.Size(172, 26);
             this.graphsToolStripMenuItem.Text = "Graphs";
             // 
             // timeSeriesToolStripMenuItem
@@ -1638,24 +1650,17 @@
             this.populationToolStripMenuItem.Name = "populationToolStripMenuItem";
             this.populationToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             // 
-            // label39
+            // chBoxSaveStats
             // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(75, 391);
-            this.label39.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(152, 17);
-            this.label39.TabIndex = 69;
-            this.label39.Text = "Batch Size Porcentage";
-            // 
-            // txtBatchSize
-            // 
-            this.txtBatchSize.Location = new System.Drawing.Point(8, 387);
-            this.txtBatchSize.Margin = new System.Windows.Forms.Padding(4);
-            this.txtBatchSize.Name = "txtBatchSize";
-            this.txtBatchSize.Size = new System.Drawing.Size(63, 22);
-            this.txtBatchSize.TabIndex = 68;
-            this.txtBatchSize.Text = "0,10";
+            this.chBoxSaveStats.AutoSize = true;
+            this.chBoxSaveStats.Checked = true;
+            this.chBoxSaveStats.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chBoxSaveStats.Location = new System.Drawing.Point(360, 371);
+            this.chBoxSaveStats.Name = "chBoxSaveStats";
+            this.chBoxSaveStats.Size = new System.Drawing.Size(221, 21);
+            this.chBoxSaveStats.TabIndex = 70;
+            this.chBoxSaveStats.Text = "Save Champions Performance";
+            this.chBoxSaveStats.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -1791,7 +1796,6 @@
         private System.Windows.Forms.ToolStripMenuItem savePopulationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bestGenomeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem problemDomainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem graphsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeSeriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fitnessBestMeansToolStripMenuItem;
@@ -1844,5 +1848,6 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label label39;
         private System.Windows.Forms.TextBox txtBatchSize;
+        private System.Windows.Forms.CheckBox chBoxSaveStats;
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace SharpNeat.Domains.EasyChange
 {
@@ -58,7 +59,8 @@ namespace SharpNeat.Domains.EasyChange
             // Loads data from the specified file.
             _moleculeCaracteristics = loadDataset(jsonPath);
 
-            //double[] debuj = GetRange(moleculeCaracteristics);
+            //double[] debuj = GetRange(_moleculeCaracteristics);
+
             _moleculesCount = _moleculeCaracteristics.Count;
             _caracteristicsCount = _moleculeCaracteristics[0].Length - 1;
             _moleculesData = new List<double[]>();
@@ -88,7 +90,7 @@ namespace SharpNeat.Domains.EasyChange
                     {
                         secArray[j] = _moleculeCaracteristics[j][i];
                     }
-                    normalizedArray = NormalizeData(secArray, -normalizeRange, normalizeRange);
+                    normalizedArray = NormalizeData(secArray, 0, normalizeRange);
                     for (int j = 0; j < _moleculeCaracteristics.Count; j++)
                     {
                         _moleculeCaracteristics[j][i] = normalizedArray[j];
@@ -141,6 +143,7 @@ namespace SharpNeat.Domains.EasyChange
                         itemsAsDouble[i] = Double.Parse(items[i]) / 1000;
                     else
                         itemsAsDouble[i] = Double.Parse(items[i], CultureInfo.InvariantCulture);
+                    Debug.Assert(!Double.IsNaN(itemsAsDouble[i]));
                 }
                 valuesFROMcsv.Add(itemsAsDouble);
             }                    
@@ -155,11 +158,13 @@ namespace SharpNeat.Domains.EasyChange
             double dataMax = data.Max();
             double dataMin = data.Min();
             double range = dataMax - dataMin;
-
-            return data
-                .Select(d => (d - dataMin) / range)
-                .Select(n => ((1 - n) * min + n * max))
-                .ToArray();
+            if (range != 0)
+                return data
+                    .Select(d => (d - dataMin) / range)
+                    .Select(n => ((1 - n) * min + n * max))
+                    .ToArray();
+            else
+                return new double[data.Count()];
         }
 
         /// <summary>

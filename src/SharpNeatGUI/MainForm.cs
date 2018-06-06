@@ -67,7 +67,6 @@ namespace SharpNeatGUI
         #region Instance Fields [Views]
 
         GenomeForm _bestGenomeForm;
-        ProblemDomainForm _domainForm;
         List<TimeSeriesGraphForm> _timeSeriesGraphFormList = new List<TimeSeriesGraphForm>();
         List<SummaryGraphForm> _summaryGraphFormList = new List<SummaryGraphForm>();
 
@@ -139,6 +138,7 @@ namespace SharpNeatGUI
             // Loads the different types of fitness and selects the first as default.
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Accuracy", 0));
             cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Escalated Accuracy", 1));
+            cmbFitnessFnc.Items.Add(new ListItem(string.Empty, "Matthews Corr. Coef.", 2));
             cmbFitnessFnc.SelectedIndex = 0;
 
             // Creates a predictor.
@@ -171,10 +171,6 @@ namespace SharpNeatGUI
                 _bestGenomeForm = null;
             }
 
-            if(null != _domainForm) {
-                _domainForm.Close();
-                _domainForm = null;
-            }
             
         }
 
@@ -247,6 +243,10 @@ namespace SharpNeatGUI
             }
 
             _selectedExperiment.NeatGenomeParameters.InitialInterconnectionsProportion = initConnProportion.Value;
+            _selectedExperiment.NormalizeData = chBoxNormalizeData.Checked;
+            if (_selectedExperiment.NormalizeData)
+                _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
+            _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
 
             // Create a genome factory appropriate for the experiment.
             IGenomeFactory<NeatGenome> genomeFactory = _selectedExperiment.CreateGenomeFactory();
@@ -292,7 +292,6 @@ namespace SharpNeatGUI
 
             // Notify any open views.
             if(null != _bestGenomeForm) { _bestGenomeForm.Reconnect(_ea); }
-            if(null != _domainForm) { _domainForm.Reconnect(_ea); }
             foreach(TimeSeriesGraphForm graphForm in _timeSeriesGraphFormList) {
                 graphForm.Reconnect(_ea);
             }
@@ -360,11 +359,9 @@ namespace SharpNeatGUI
             _selectedExperiment.MaxGen = ParseInt(txtMaxGen, _selectedExperiment.MaxGen);
             _selectedExperiment.TestPorcentage = ParseDouble(txtTestPorcentage, _selectedExperiment.TestPorcentage) ;
             _selectedExperiment.SavePeriod = ParseInt(txtSavePeriod, _selectedExperiment.SavePeriod);
-            _selectedExperiment.NormalizeData = chBoxNormalizeData.Checked;
-            _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
-            _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
             _selectedExperiment.ParallelOps.MaxDegreeOfParallelism = ParseInt(txtMaxParallelism, _selectedExperiment.ParallelOps.MaxDegreeOfParallelism);
             _selectedExperiment.BatchSizePorcentage = ParseDouble(txtBatchSize, _selectedExperiment.BatchSizePorcentage);
+            _selectedExperiment.SaveChampStats = chBoxSaveStats.Checked;
         }
 
         #endregion
@@ -445,6 +442,7 @@ namespace SharpNeatGUI
             txtMaxParallelism.Enabled = true;
             progressBar1.Value = 0;
             txtBatchSize.Enabled = true;
+            chBoxSaveStats.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -504,6 +502,7 @@ namespace SharpNeatGUI
             txtMaxParallelism.Enabled = true;
             progressBar1.Value = 0;
             txtBatchSize.Enabled = true;
+            chBoxSaveStats.Enabled = true;
 
             // Logging to file.
             gbxLogging.Enabled = true;
@@ -534,7 +533,7 @@ namespace SharpNeatGUI
             txtPopulationStatus.BackColor = Color.Orange;
 
             // Search control buttons.
-            btnSearchStart.Enabled = true;
+            btnSearchStart.Enabled = (_selectedExperiment.MaxGen > _ea.CurrentGeneration);
             btnSearchStop.Enabled = false;
             btnSearchReset.Enabled = true;
 
@@ -565,6 +564,7 @@ namespace SharpNeatGUI
             txtPredictionFilePath.Enabled = false;
             txtMaxParallelism.Enabled = false;
             txtBatchSize.Enabled = false;
+            chBoxSaveStats.Enabled = false;
 
 
             // Logging to file.
@@ -621,6 +621,7 @@ namespace SharpNeatGUI
             cmbFitnessFnc.Enabled = false;
             txtMaxParallelism.Enabled = false;
             txtBatchSize.Enabled = false;
+            chBoxSaveStats.Enabled = false;
 
             // Logging to file.
             gbxLogging.Enabled = false;
@@ -908,30 +909,7 @@ namespace SharpNeatGUI
             _bestGenomeForm.RefreshView();
         }
 
-        private void problemDomainToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AbstractDomainView domainView = _selectedExperiment.CreateDomainView();
-            if(null == domainView) {
-                return;
-            }
-
-            // Create form.
-            _domainForm = new ProblemDomainForm(_selectedExperiment.Name, domainView, _ea);
-
-            // Attach a event handler to update this main form when the domain form is closed.
-            _domainForm.FormClosed += new FormClosedEventHandler(delegate(object senderObj, FormClosedEventArgs eArgs)
-            {
-                _domainForm = null;
-                problemDomainToolStripMenuItem.Enabled = true;
-            });
-
-            // Prevent creating more then one instance of the form.
-            problemDomainToolStripMenuItem.Enabled = false;
-
-            // Show the form.
-            _domainForm.Show(this);
-            _domainForm.RefreshView();
-        }
+       
 
         #endregion
 
@@ -1666,8 +1644,8 @@ namespace SharpNeatGUI
                 }
             }
 
-            // Save best Genome
-            if (_ea.CurrentGeneration == _selectedExperiment.MaxGen)
+            // Save best Genome.
+            if (_ea.CurrentGeneration == _selectedExperiment.MaxGen + 1)
             {
                 NeatGenome champGenome = _ea.CurrentChampGenome;
                 NeatAlgorithmStats stats = _ea.Statistics;
@@ -1679,6 +1657,7 @@ namespace SharpNeatGUI
                 {
                     _selectedExperiment.SavePopulation(xw, new NeatGenome[] { champGenome });
                 }
+               
             }
 
         }

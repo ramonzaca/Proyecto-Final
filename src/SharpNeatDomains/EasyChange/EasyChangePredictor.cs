@@ -88,7 +88,7 @@ namespace SharpNeat.Domains.EasyChange
                     {
                         secArray[j] = valuesFROMcsv[j][i];
                     }
-                    var normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, -normalizeRange, normalizeRange);
+                    var normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, 0, normalizeRange);
                     for (int j = 0; j < valuesFROMcsv.Count; j++)
                     {
                         valuesFROMcsv[j][i] = normalizedArray[j];
@@ -129,7 +129,7 @@ namespace SharpNeat.Domains.EasyChange
                         box.ResetState();
 
                         // Voting part.
-                        if (output >= 0.5)
+                        if (output >= 1)
                             voteYes += 1;
                         else
                             voteNo += 1;

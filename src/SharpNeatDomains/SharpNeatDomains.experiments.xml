@@ -11,7 +11,7 @@
 			  <Scheme>Acyclic</Scheme>
 		  </Activation>
 		  <ComplexityRegulationStrategy>Relative</ComplexityRegulationStrategy>
-		  <ComplexityThreshold>10</ComplexityThreshold>
+		  <ComplexityThreshold>100</ComplexityThreshold>
 		  <MaxDegreeOfParallelism>7</MaxDegreeOfParallelism>
 		  <DatasetPath>dataset Todeschini - RB.csv</DatasetPath>
 		  <NormalizeData>true</NormalizeData>
@@ -24,8 +24,9 @@
 		<Description>
 EasyChange is a classification tool.
 A population is created in accordance to a domain, specifying the amount of inputs to the network.
-The results on the testing porcentage will be given after the amount of Max Generations if completed.
-		</Description>
+The population is trained/evolved with a porcentage of the selected dataset for a specified Max Generations.
+After that, the rest of the dataset is evaluated once as a testing step.
+			</Description>
     </Config>
   </Experiment>
 

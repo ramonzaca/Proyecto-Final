@@ -18,6 +18,10 @@ using SharpNeat.Phenomes;
 using SharpNeat.EvolutionAlgorithms;
 using SharpNeat.Genomes.Neat;
 using System.Xml;
+using System.Threading;
+using Redzen.Random;
+using System.IO;
+using System.Globalization;
 
 namespace SharpNeat.Domains.EasyChange
 {
@@ -34,16 +38,27 @@ namespace SharpNeat.Domains.EasyChange
         static int _maxGen;
         static List<double[]> _moleculeCaracteristics;
         static int _moleculesCount;
-        static int _caracteristicsCount; 
+        static int _caracteristicsCount;
         static List<double[]> _moleculesData;
         static bool[] _moleculesResults;
         static int _split;
         static int _fitnessFunction;
         static double _batchSize;
+        static bool _saveChampStats;
+        Semaphore _sem;
+        int _lastGeneration;
+        int _positives;
+        int _negatives;
+        int _index;
+        protected readonly IRandomSource _rnd;
+        double _champFitnessTest;
+        int[,] _champConfMatrix;
+        bool _saved;
+
 
         #region IPhenomeEvaluator<IBlackBox> Members
 
-        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage, int fitnessFunction,double batchSizePorcentage)
+        public EasyChangeEvaluator(NeatEvolutionAlgorithm<NeatGenome> ea, EasyChangeDataLoader dataLoader, int maxGen, double testPorcentage, int fitnessFunction,double batchSizePorcentage, bool saveChampStats)
         {
             
             _ea = ea;
@@ -60,8 +75,16 @@ namespace SharpNeat.Domains.EasyChange
             _fitnessFunction = fitnessFunction;
             temp = _split * batchSizePorcentage;
             _batchSize = (int) temp;
+            _sem = new Semaphore(1, 1);
+            _lastGeneration = -1;
+            _rnd = RandomSourceFactory.Create();
+            _champConfMatrix = new int[2,2];
+            _champFitnessTest = -1;
+            _saved = false;
+            _saveChampStats = saveChampStats;
 
-        }
+
+    }
         /// <summary>
         /// Gets the total number of evaluations that have been performed.
         /// </summary>
@@ -88,9 +111,10 @@ namespace SharpNeat.Domains.EasyChange
         {
             if (_fitnessFunction == 0)
                 return Accuracy(box);
-            else
+            else if (_fitnessFunction == 1)
                 return EscalatedAccuracy(box);
-            
+            else
+                return MCC(box);
         }
 
         /// <summary>
@@ -123,13 +147,19 @@ namespace SharpNeat.Domains.EasyChange
             // Training mode case
             if (_trainingMode)
             {
-                Random rnd = new Random();
-                int index = rnd.Next(0, _split);
+                _sem.WaitOne();
+                if (_ea.CurrentGeneration > _lastGeneration)
+                {
+                    _index = _rnd.Next(0, _split);
+                    _lastGeneration = (int)_ea.CurrentGeneration;
+                }
+                _sem.Release();
+
                 for (int i = 0; i < _batchSize; i++)
                 {
                     for (int j = 0; j < _caracteristicsCount; j++)
                     {
-                        inputArr[j] = _moleculesData[(i + index) % _split][j];
+                        inputArr[j] = _moleculesData[(i + _index) % _split][j];
                     }
 
                     // Activate the black box.
@@ -143,7 +173,7 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if ((output >= 0.5 && _moleculesResults[(i + index) % _split]) || (output < 0.5 && !_moleculesResults[(i + index) % _split]))
+                    if ((output >= 1 && _moleculesResults[(i + _index) % _split]) || (output < 1 && !_moleculesResults[(i + _index) % _split]))
                         fitness += 1.0;
 
                     // Reset black box state ready for next test case.
@@ -161,11 +191,21 @@ namespace SharpNeat.Domains.EasyChange
                 // Controls if the stop condition is satisfied
                 if (_ea.CurrentGeneration == _maxGen + 2)
                 {
+                    _sem.WaitOne();
+                    if (_saveChampStats && !_saved)
+                    {
+                        SaveStats();
+                        _saved = true;
+                    }
+                    _sem.Release();
                     _stopConditionSatisfied = true;
                     return FitnessInfo.Zero;
                 }
                 else
                 {
+                    // Confution matrix of current genome
+                    int[,] confMatrix = new int[2,2];
+
                     for (int t = _split; t < _moleculesCount; t++)
                     {
                         for (int j = 0; j < _caracteristicsCount; j++)
@@ -184,7 +224,11 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && _moleculesResults[t] || output < 0.5 && !_moleculesResults[t])
+                        // Full the confution matrix
+                        confMatrix[_moleculesResults[t] ? 1 : 0 , (output >= 1) ? 1 : 0] += 1;
+
+                        // Evaluation of prediction
+                        if (output >= 1 && _moleculesResults[t] || output < 1 && !_moleculesResults[t])
                             fitness += 1.0;
 
 
@@ -194,6 +238,16 @@ namespace SharpNeat.Domains.EasyChange
 
                     fitness /= (_moleculesCount - _split);
                     fitness *= 100;
+
+                    // Check if current genome is champ
+                    _sem.WaitOne();
+                    if (fitness > _champFitnessTest)
+                    {
+                        _champFitnessTest = fitness;
+                        _champConfMatrix = confMatrix;
+                    }
+                    _sem.Release();
+
                     return new FitnessInfo(fitness, fitness);
                 }
             }
@@ -210,8 +264,6 @@ namespace SharpNeat.Domains.EasyChange
             ISignalArray inputArr = box.InputSignalArray;
             ISignalArray outputArr = box.OutputSignalArray;
             _evalCount++;
-            int positives = 0;
-            int negatives = 0;
 
 
             // If it should analize the training or the test data.
@@ -222,21 +274,34 @@ namespace SharpNeat.Domains.EasyChange
 
             // Training mode case
             if (_trainingMode) {
-                Random rnd = new Random();
-                int index = rnd.Next(0, _split);
+                _sem.WaitOne();
+                if (_ea.CurrentGeneration > _lastGeneration)
+                {
+                    
+                    // Checks there are at least one element of each class
+                    do
+                    {
+                        _positives = 0;
+                        _negatives = 0;
+                        _index = _rnd.Next(0, _split);
 
-                // Counts the amount of each classes cases.
-                for (int o = 0; o < _batchSize; o++)
-                    if (_moleculesResults[(o+index)%_split])
-                        positives++;
-                    else
-                        negatives++;
-                
+                        // Counts the amount of each classes cases.
+                        for (int o = 0; o < _batchSize; o++)
+                            if (_moleculesResults[(o + _index) % _split])
+                                _positives++;
+                            else
+                                _negatives++;
+                    }
+                    while (_positives == 0 || _negatives == 0);
+
+                    _lastGeneration = (int)_ea.CurrentGeneration;
+                }
+                _sem.Release();
                 for (int i = 0; i < _batchSize; i++)
                 {
                     for (int j = 0; j < _caracteristicsCount; j++)
                     {
-                        inputArr[j] = _moleculesData[(i + index)% _split][j];
+                        inputArr[j] = _moleculesData[(i + _index)% _split][j];
                     }
 
                     // Activate the black box.
@@ -250,10 +315,10 @@ namespace SharpNeat.Domains.EasyChange
                     // Read output signal.
                     output = outputArr[0];
 
-                    if (output >= 0.5 && _moleculesResults[(i + index) % _split])
-                        fitness += 1.0/positives;
-                    if (output < 0.5 && !_moleculesResults[(i + index) % _split])
-                        fitness += 1.0/negatives;
+                    if (output >= 1 && _moleculesResults[(i + _index) % _split])
+                        fitness += 1.0/_positives;
+                    if (output < 1 && !_moleculesResults[(i + _index) % _split])
+                        fitness += 1.0/_negatives;
                               
 
 
@@ -270,18 +335,38 @@ namespace SharpNeat.Domains.EasyChange
                 // Controls if the stop condition is satisfied
                 if (_ea.CurrentGeneration == _maxGen + 2)
                 {
+                    _sem.WaitOne();
+                    if (_saveChampStats && !_saved)
+                    {
+                        SaveStats();
+                        _saved = true;
+                    }
+                    _sem.Release();
                     _stopConditionSatisfied = true;
                     return FitnessInfo.Zero;
                 }
               else
                 {
-                    // Counts the amount of each classes cases.
-                    for (int p = _split; p < _moleculesCount; p++)
-                        if (_moleculesResults[p])
-                            positives++;
-                        else
-                            negatives++;
+                    _sem.WaitOne();
+                    if (_ea.CurrentGeneration > _lastGeneration)
+                    {
+                        _positives = 0;
+                        _negatives = 0;
+                        // Counts the amount of each classes cases.
+                        for (int p = _split; p < _moleculesCount; p++)
+                            if (_moleculesResults[p])
+                                _positives++;
+                            else
+                                _negatives++;
+                        _lastGeneration = (int)_ea.CurrentGeneration;
+                        
+                    }
+                    _sem.Release();
 
+                    // Confution matrix of current genome
+                    int[,] confMatrix = new int[2,2];
+
+                    // Full input 
                     for (int t = _split; t < _moleculesCount; t++)
                     {
                         for (int j = 0; j < _caracteristicsCount; j++)
@@ -300,20 +385,216 @@ namespace SharpNeat.Domains.EasyChange
                         // Read output signal.
                         output = outputArr[0];
 
-                        if (output >= 0.5 && _moleculesResults[t])
-                            fitness += 1.0 / positives;
-                        if (output < 0.5 && !_moleculesResults[t])
-                            fitness += 1.0 / negatives;
+                        //Full the confution matrix
+                        confMatrix[_moleculesResults[t] ? 1 : 0 , (output >= 1) ? 1 : 0] += 1;
 
+                        // Evaluation of result
+                        if (output >= 1 && _moleculesResults[t])
+                            fitness += 1.0 / _positives;
+                        if (output < 1 && !_moleculesResults[t])
+                            fitness += 1.0 / _negatives;
 
                         // Reset black box state ready for next test case.
                         box.ResetState();
                     }
 
                     fitness *= 50;
+
+                    // Check if current genome is champ
+                    _sem.WaitOne();
+                    if(fitness > _champFitnessTest) {
+                        _champFitnessTest = fitness;
+                        _champConfMatrix = confMatrix;
+                    }                        
+                    _sem.Release();
+
                     return new FitnessInfo(fitness, fitness);
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Fitness function case: Matthews Correlation Coefficient
+        /// </summary>
+        private FitnessInfo MCC(IBlackBox box)
+        {
+            double fitness = 0.0;
+            double output;
+            ISignalArray inputArr = box.InputSignalArray;
+            ISignalArray outputArr = box.OutputSignalArray;
+            _evalCount++;
+
+            // Confution matrix of current genome
+            int[,] confMatrix = new int[2, 2];
+
+            // If it should analize the training or the test data.
+            if (_ea.CurrentGeneration == _maxGen + 1)
+            {
+                _trainingMode = false;
+            }
+
+            // Training mode case
+            if (_trainingMode)
+            {
+                _sem.WaitOne();
+                if (_ea.CurrentGeneration > _lastGeneration)
+                {
+                    _index = _rnd.Next(0, _split);
+                    _lastGeneration = (int)_ea.CurrentGeneration;
+                }
+                _sem.Release();
+
+                for (int i = 0; i < _batchSize; i++)
+                {
+                    for (int j = 0; j < _caracteristicsCount; j++)
+                    {
+                        inputArr[j] = _moleculesData[(i + _index) % _split][j];
+                    }
+
+                    // Activate the black box.
+                    box.Activate();
+                    if (!box.IsStateValid)
+                    {   // Any black box that gets itself into an invalid state is unlikely to be
+                        // any good, so let's just exit here.
+                        return FitnessInfo.Zero;
+                    }
+
+                    // Read output signal.
+                    output = outputArr[0];
+
+                    // Full the confution matrix
+                    confMatrix[_moleculesResults[i] ? 1 : 0, (output >= 1) ? 1 : 0] += 1;
+
+                    // Reset black box state ready for next test case.
+                    box.ResetState();
+                }
+
+                // MCC calculation
+                int TP = confMatrix[1, 1];
+                int FP = confMatrix[0, 1];
+                int TN = confMatrix[0, 0];
+                int FN = confMatrix[1, 0];
+
+                int denominator = (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN);
+                if (denominator == 0)
+                    denominator = 1;
+                fitness = (TP * TN - FP * FN) / Math.Sqrt(denominator);
+                
+                // Linear Transformation                
+                fitness += 1;
+               // fitness *= 50;
+
+                return new FitnessInfo(fitness, fitness);
+            }
+
+            // Test Case
+            else
+            {
+                // Controls if the stop condition is satisfied
+                if (_ea.CurrentGeneration == _maxGen + 2)
+                {
+                    _sem.WaitOne();
+                    if (_saveChampStats && !_saved)
+                    {
+                        SaveStats();
+                        _saved = true;
+                    }
+                    _sem.Release();
+                    _stopConditionSatisfied = true;
+                    return FitnessInfo.Zero;
+                }
+                else
+                {
+                    
+                    for (int t = _split; t < _moleculesCount; t++)
+                    {
+                        for (int j = 0; j < _caracteristicsCount; j++)
+                        {
+                            inputArr[j] = _moleculesData[t][j];
+                        }
+
+                        // Activate the black box.
+                        box.Activate();
+                        if (!box.IsStateValid)
+                        {   // Any black box that gets itself into an invalid state is unlikely to be
+                            // any good, so let's just exit here.
+                            return FitnessInfo.Zero;
+                        }
+
+                        // Read output signal.
+                        output = outputArr[0];
+
+                        // Full the confution matrix
+                        confMatrix[_moleculesResults[t] ? 1 : 0, (output >= 1) ? 1 : 0] += 1;
+
+                        // Reset black box state ready for next test case.
+                        box.ResetState();
+                    }
+
+                    // MCC calculation
+                    int TP = confMatrix[1, 1];
+                    int FP = confMatrix[0, 1];
+                    int TN = confMatrix[0, 0];
+                    int FN = confMatrix[1, 0];
+
+                    int denominator = (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN);
+                    if (denominator == 0)
+                        denominator = 1;
+                    fitness = (TP * TN - FP * FN) / Math.Sqrt(denominator);
+
+                    // Linear Transformation                
+                    fitness += 1;
+                    //fitness *= 50;
+
+                    // Check if current genome is champ
+                    _sem.WaitOne();
+                    if (fitness > _champFitnessTest)
+                    {
+                        _champFitnessTest = fitness;
+                        _champConfMatrix = confMatrix;
+                    }
+                    _sem.Release();
+
+                    return new FitnessInfo(fitness, fitness);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function responsable for saving the champs stats during testing mode if specified.
+        /// </summary>
+        private void SaveStats() {
+
+            // Save format.
+            NumberFormatInfo filenameNumberFormatter = new NumberFormatInfo();
+            filenameNumberFormatter.NumberDecimalSeparator = ",";
+
+            // Save champs stats
+            string path = string.Format(filenameNumberFormatter, "Stats/Stats_Fit{0:0.00}_{1:HHmmss_ddMMyyyy}.txt",
+                                            _champFitnessTest, DateTime.Now);
+
+            StreamWriter writer = new StreamWriter(path);
+
+            writer.WriteLine("Total number of cases in test dataset :{0}", _moleculesCount - _split);
+            writer.WriteLine();
+            writer.WriteLine("Testing champion fitness:{0}",_champFitnessTest);
+            writer.WriteLine();
+            writer.WriteLine("Champions confution matrix (Rows = Real Value) (Columns = Predicted Value):");
+            for (int j = 0; j < 2; j++)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    if (i != 0)
+                    {
+                    writer.Write(" ");
+                    }
+                writer.Write(_champConfMatrix[i,j]);
+                }
+            writer.WriteLine();
+            }
+
+            writer.Close();
         }
     }
 }

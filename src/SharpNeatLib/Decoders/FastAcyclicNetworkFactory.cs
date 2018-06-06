@@ -15,6 +15,7 @@ using System.Diagnostics;
 using SharpNeat.Network;
 using SharpNeat.Phenomes.NeuralNets;
 
+
 namespace SharpNeat.Decoders
 {
     /// <summary>

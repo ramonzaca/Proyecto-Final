@@ -247,6 +247,8 @@ namespace SharpNeat.EvolutionAlgorithms
 
             // TODO: More checks.
             Debug.Assert(_genomeList.Count == _populationSize);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         #endregion
