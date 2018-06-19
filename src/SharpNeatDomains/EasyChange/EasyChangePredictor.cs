@@ -58,40 +58,47 @@ namespace SharpNeat.Domains.EasyChange
             get { return _genomeList; }
         }
 
-        public void loadPopulation()
+        public void loadPopulation(int input, int output)
         {
             using (XmlReader xr = XmlReader.Create(_genomePath))
             {
-                _genomeList = _experiment.LoadPopulation(xr);
+                _genomeList = _experiment.LoadPopulationPrediction(xr, input, output);
             }
         }
 
-        public void Predict(string predictionFilePath, bool normalizeData,int normalizeRange)
+        public void Predict(string predictionFilePath)
         {
             double output;
             double voteYes;
             double voteNo;
+            IBlackBox box;
+            ISignalArray inputArr;
+            ISignalArray outputArr;
 
             // We load the dataset
             List<double[]> valuesFROMcsv = EasyChangeDataLoader.loadDataset(_datasetPath);
+
+            // We laod the population
+            loadPopulation(valuesFROMcsv[0].Length, 1);
 
             // We create the writer for the output file.
             StreamWriter writer = new StreamWriter("Predictions/" + predictionFilePath);
 
             // If data must be normalized
-            if (normalizeData)
+            if (_experiment.NormalizeData)
             {
                 double[] secArray = new double[valuesFROMcsv.Count];
+                double[] normalizedArray;
                 for (int i = 0; i < valuesFROMcsv[0].Length; i++) 
                 {
                     for (int j = 0; j < valuesFROMcsv.Count; j++)
                     {
                         secArray[j] = valuesFROMcsv[j][i];
                     }
-                    var normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, 0, normalizeRange);
-                    for (int j = 0; j < valuesFROMcsv.Count; j++)
+                    normalizedArray = EasyChangeDataLoader.NormalizeData(secArray, 0, _experiment.NormalizeRange);
+                    for (int r = 0; r < valuesFROMcsv.Count; r++)
                     {
-                        valuesFROMcsv[j][i] = normalizedArray[j];
+                        valuesFROMcsv[r][i] = normalizedArray[r];
                     }
 
                 }
@@ -105,12 +112,12 @@ namespace SharpNeat.Domains.EasyChange
                 voteYes = 0;
                 for (int i = 0; i < _genomeList.Count; i++)
                 {
-                    IBlackBox box;
+                    
                     if (null == _genomeList[i].CachedPhenome)
                         _genomeList[i].CachedPhenome = _experiment.CreateGenomeDecoder().Decode(_genomeList[i]);
                     box = (IBlackBox)_genomeList[i].CachedPhenome;
-                    ISignalArray inputArr = box.InputSignalArray;
-                    ISignalArray outputArr = box.OutputSignalArray;
+                    inputArr = box.InputSignalArray;
+                    outputArr = box.OutputSignalArray;
 
                     for (int j = 0; j < inputs.Length; j++)
                     {
@@ -137,7 +144,7 @@ namespace SharpNeat.Domains.EasyChange
                 }
 
                 // After all genomes have voted, the mayority is writen in the output file.
-                if (voteYes > voteNo)
+                if (voteYes > voteNo )
                     writer.WriteLine("1");
                 else if (voteYes < voteNo)
                     writer.WriteLine("0");

@@ -27,6 +27,7 @@ namespace SharpNeatGUI
         TimeSeriesDataSource[] _dataSourceArray;
         RollingPointPairList[] _pointPlotArray;
         GraphPane _graphPane;
+        int _MaxGen;
 
         #region Constructor
 
@@ -34,7 +35,7 @@ namespace SharpNeatGUI
         /// Construct the form with the provided details and data sources.
         /// </summary>
         public TimeSeriesGraphForm(string title, string xAxisTitle, string y1AxisTitle, string y2AxisTitle,
-                         TimeSeriesDataSource[] dataSourceArray, AbstractGenerationalAlgorithm<NeatGenome> ea)
+                         TimeSeriesDataSource[] dataSourceArray, AbstractGenerationalAlgorithm<NeatGenome> ea, int MaxGen)
         {
             InitializeComponent();
 
@@ -46,6 +47,7 @@ namespace SharpNeatGUI
             if(null != ea) {
                 _ea.UpdateEvent += new EventHandler(_ea_UpdateEvent);
             }
+            _MaxGen = MaxGen;
         }
 
         #endregion
@@ -112,18 +114,19 @@ namespace SharpNeatGUI
         public void _ea_UpdateEvent(object sender, EventArgs e)
         {
             // Switch execution to GUI thread if necessary.
-            if(this.InvokeRequired)
+            if (this.InvokeRequired)
             {
                 // Must use Invoke(). BeginInvoke() will execute asynchronously and the evolution algorithm therefore 
                 // may have moved on and will be in an intermediate and indeterminate (between generations) state.
-                this.Invoke(new MethodInvoker(delegate() 
+                this.Invoke(new MethodInvoker(delegate ()
                 {
-                    if(this.IsDisposed) {
+                if (this.IsDisposed || _ea.CurrentGeneration == _MaxGen + 2) {
                         return;
                     }
 
                     // For each series, generate a point and add it to that series' point-pair list.
                     int sourceCount = _dataSourceArray.Length;
+
                     for(int i=0; i<sourceCount; i++)
                     {
                         TimeSeriesDataSource ds = _dataSourceArray[i];

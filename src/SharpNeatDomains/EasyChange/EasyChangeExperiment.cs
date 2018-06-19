@@ -243,6 +243,17 @@ namespace SharpNeat.Domains.EasyChange
         }
 
         /// <summary>
+        /// Special case for prediction:
+        /// Load a population of genomes from an XmlReader and returns the genomes in a new list.
+        /// The genome factory for the genomes can be obtained from any one of the genomes.
+        /// </summary>
+        public List<NeatGenome> LoadPopulationPrediction(XmlReader xr, int input, int output)
+        {
+            NeatGenomeFactory genomeFactory = (NeatGenomeFactory)CreateGenomeFactoryPrediction(input,output);
+            return NeatGenomeXmlIO.ReadCompleteGenomeList(xr, false, genomeFactory);
+        }
+
+        /// <summary>
         /// Save a population of genomes to an XmlWriter.
         /// </summary>
         public void SavePopulation(XmlWriter xw, IList<NeatGenome> genomeList)
@@ -272,6 +283,16 @@ namespace SharpNeat.Domains.EasyChange
                                     _normalizeRange,
                                     _seed);
             return new NeatGenomeFactory(InputCount, OutputCount, _neatGenomeParams);
+        }
+
+        /// <summary>
+        /// Special case for prediction:
+        /// Create a genome factory for the experiment.
+        /// Create a genome factory with our neat genome parameters object and the appropriate number of input and output neuron genes.
+        /// </summary>
+        public IGenomeFactory<NeatGenome> CreateGenomeFactoryPrediction(int input, int output)
+        {
+            return new NeatGenomeFactory(input, output, _neatGenomeParams);
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace SharpNeat.Domains.EasyChange
         int _index;
         protected readonly IRandomSource _rnd;
         double _champFitnessTest;
-        int[,] _champConfMatrix;
+        long[,] _champConfMatrix;
         bool _saved;
 
 
@@ -78,7 +78,7 @@ namespace SharpNeat.Domains.EasyChange
             _sem = new Semaphore(1, 1);
             _lastGeneration = -1;
             _rnd = RandomSourceFactory.Create();
-            _champConfMatrix = new int[2,2];
+            _champConfMatrix = new long[2,2];
             _champFitnessTest = -1;
             _saved = false;
             _saveChampStats = saveChampStats;
@@ -204,7 +204,7 @@ namespace SharpNeat.Domains.EasyChange
                 else
                 {
                     // Confution matrix of current genome
-                    int[,] confMatrix = new int[2,2];
+                    long[,] confMatrix = new long[2,2];
 
                     for (int t = _split; t < _moleculesCount; t++)
                     {
@@ -284,6 +284,7 @@ namespace SharpNeat.Domains.EasyChange
                         _positives = 0;
                         _negatives = 0;
                         _index = _rnd.Next(0, _split);
+                        //_index = ((int)_batchSize + _index) % _split;
 
                         // Counts the amount of each classes cases.
                         for (int o = 0; o < _batchSize; o++)
@@ -364,7 +365,7 @@ namespace SharpNeat.Domains.EasyChange
                     _sem.Release();
 
                     // Confution matrix of current genome
-                    int[,] confMatrix = new int[2,2];
+                    long[,] confMatrix = new long[2,2];
 
                     // Full input 
                     for (int t = _split; t < _moleculesCount; t++)
@@ -426,7 +427,7 @@ namespace SharpNeat.Domains.EasyChange
             _evalCount++;
 
             // Confution matrix of current genome
-            int[,] confMatrix = new int[2, 2];
+            long[,] confMatrix = new long[2, 2];
 
             // If it should analize the training or the test data.
             if (_ea.CurrentGeneration == _maxGen + 1)
@@ -471,19 +472,19 @@ namespace SharpNeat.Domains.EasyChange
                 }
 
                 // MCC calculation
-                int TP = confMatrix[1, 1];
-                int FP = confMatrix[0, 1];
-                int TN = confMatrix[0, 0];
-                int FN = confMatrix[1, 0];
+                long TP = confMatrix[1, 1];
+                long FP = confMatrix[0, 1];
+                long TN = confMatrix[0, 0];
+                long FN = confMatrix[1, 0];
 
-                int denominator = (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN);
+                long denominator = (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN);
                 if (denominator == 0)
                     denominator = 1;
                 fitness = (TP * TN - FP * FN) / Math.Sqrt(denominator);
                 
                 // Linear Transformation                
                 fitness += 1;
-               // fitness *= 50;
+                //fitness *= 50;
 
                 return new FitnessInfo(fitness, fitness);
             }
@@ -533,12 +534,12 @@ namespace SharpNeat.Domains.EasyChange
                     }
 
                     // MCC calculation
-                    int TP = confMatrix[1, 1];
-                    int FP = confMatrix[0, 1];
-                    int TN = confMatrix[0, 0];
-                    int FN = confMatrix[1, 0];
+                    long TP = confMatrix[1, 1];
+                    long FP = confMatrix[0, 1];
+                    long TN = confMatrix[0, 0];
+                    long FN = confMatrix[1, 0];
 
-                    int denominator = (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN);
+                    long denominator = (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN);
                     if (denominator == 0)
                         denominator = 1;
                     fitness = (TP * TN - FP * FN) / Math.Sqrt(denominator);

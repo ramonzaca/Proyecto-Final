@@ -26,6 +26,7 @@ namespace SharpNeatGUI
     {
         AbstractGenomeView _genomeViewControl;
         AbstractGenerationalAlgorithm<NeatGenome> _ea;
+        int _MaxGen;
 
         #region Constructor
 
@@ -33,7 +34,7 @@ namespace SharpNeatGUI
         /// Construct with the provided form title, genome view/renderer and evolution algorithm. We listen to update events
         /// from the evolution algorithm and cleanly detach from it when this form closes.
         /// </summary>
-        public GenomeForm(string title, AbstractGenomeView genomeViewControl, AbstractGenerationalAlgorithm<NeatGenome> ea)
+        public GenomeForm(string title, AbstractGenomeView genomeViewControl, AbstractGenerationalAlgorithm<NeatGenome> ea, int MaxGen)
         {
             InitializeComponent();
             this.Text = title;
@@ -46,6 +47,7 @@ namespace SharpNeatGUI
             if(null != ea) {
                 _ea.UpdateEvent += new EventHandler(_ea_UpdateEvent);
             }
+            _MaxGen = MaxGen;
         }
 
         #endregion
@@ -94,7 +96,7 @@ namespace SharpNeatGUI
                 // may have moved on and will be in an intermediate and indeterminate (between generations) state.
                 this.Invoke(new MethodInvoker(delegate() 
                 {
-                    if(this.IsDisposed) {
+                    if(this.IsDisposed || _ea.CurrentGeneration == _MaxGen + 2) {
                         return;
                     }
                     _genomeViewControl.RefreshView(_ea.CurrentChampGenome);

@@ -65,10 +65,8 @@ namespace SharpNeat.Domains.EasyChange
             _caracteristicsCount = _moleculeCaracteristics[0].Length - 1;
             _moleculesData = new List<double[]>();
            
-            
-
-            // Data is randomly shuffled form a specific seed for experiment recreation purposes.
-            Shuffle(seed);
+           // Data is randomly shuffled form a specific seed for experiment recreation purposes.
+           // Shuffle(seed);
 
             // Results are gathered.
             _moleculesResults = new bool[_moleculesCount];
@@ -91,9 +89,9 @@ namespace SharpNeat.Domains.EasyChange
                         secArray[j] = _moleculeCaracteristics[j][i];
                     }
                     normalizedArray = NormalizeData(secArray, 0, normalizeRange);
-                    for (int j = 0; j < _moleculeCaracteristics.Count; j++)
+                    for (int p = 0; p < _moleculeCaracteristics.Count; p++)
                     {
-                        _moleculeCaracteristics[j][i] = normalizedArray[j];
+                        _moleculeCaracteristics[p][i] = normalizedArray[p];
                     }
 
                 }
@@ -113,23 +111,10 @@ namespace SharpNeat.Domains.EasyChange
         public static List<double[]> loadDataset(string jsonPath = @"")
         {
             List<double[]> valuesFROMcsv = new List<double[]>();
-            int count = jsonPath.Split('\\').Length;
-            string filesPath;
-
-            // If the path is relative.
-            if (jsonPath.Split('\\').Length > 1)
-            {
-                filesPath = jsonPath;
-            }
-            else
-            {             
-                string currentAssemblyDirectoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                filesPath = currentAssemblyDirectoryName + "/Data/" + jsonPath;
-            }
 
             // We open the file and read line by line, converting each number into a double type and adding it to the 
             // exit list of arrays.
-            StreamReader reader = File.OpenText(filesPath);
+            StreamReader reader = File.OpenText(jsonPath);
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -212,8 +197,5 @@ namespace SharpNeat.Domains.EasyChange
                 _moleculeCaracteristics[n] = value;
             }
         }
-
-        
-
     }
 }

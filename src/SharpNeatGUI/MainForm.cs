@@ -362,6 +362,10 @@ namespace SharpNeatGUI
             _selectedExperiment.ParallelOps.MaxDegreeOfParallelism = ParseInt(txtMaxParallelism, _selectedExperiment.ParallelOps.MaxDegreeOfParallelism);
             _selectedExperiment.BatchSizePorcentage = ParseDouble(txtBatchSize, _selectedExperiment.BatchSizePorcentage);
             _selectedExperiment.SaveChampStats = chBoxSaveStats.Checked;
+            _selectedExperiment.NormalizeData = chBoxNormalizeData.Checked;
+            if (_selectedExperiment.NormalizeData)
+                _selectedExperiment.NormalizeRange = ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange);
+            _selectedExperiment.Seed = ParseInt(txtSeed, _selectedExperiment.Seed);
         }
 
         #endregion
@@ -673,7 +677,11 @@ namespace SharpNeatGUI
             txtStatsAsexualOffspringCount.Text = string.Format("{0:N0} ({1:P})", stats._asexualOffspringCount, ((double)stats._asexualOffspringCount/(double)totalOffspringCount));
             txtStatsCrossoverOffspringCount.Text = string.Format("{0:N0} ({1:P})", stats._sexualOffspringCount, ((double)stats._sexualOffspringCount/(double)totalOffspringCount));
             txtStatsInterspeciesOffspringCount.Text = string.Format("{0:N0} ({1:P})", stats._interspeciesOffspringCount, ((double)stats._interspeciesOffspringCount/(double)totalOffspringCount));
-            int value = (int)((_ea.CurrentGeneration * 100) / _selectedExperiment.MaxGen);
+            int value;
+            if (_selectedExperiment.MaxGen == 0)
+                value = 100;
+            else 
+                value = (int)((_ea.CurrentGeneration * 100) / _selectedExperiment.MaxGen);
             if (value > 100)
                 value = 100;
             progressBar1.Value = value;
@@ -892,7 +900,7 @@ namespace SharpNeatGUI
             }
 
             // Create form.
-            _bestGenomeForm = new GenomeForm("Best Genome", genomeView, _ea);
+            _bestGenomeForm = new GenomeForm("Best Genome", genomeView, _ea, _selectedExperiment.MaxGen);
 
             // Attach a event handler to update this main form when the genome form is closed.
             _bestGenomeForm.FormClosed += new FormClosedEventHandler(delegate(object senderObj, FormClosedEventArgs eArgs)
@@ -955,7 +963,7 @@ namespace SharpNeatGUI
             }
 
             // Create form.
-            TimeSeriesGraphForm graphForm = new TimeSeriesGraphForm("Fitness (Best and Mean)", "Generation", "Fitness", string.Empty, _dsList.ToArray(), _ea);
+            TimeSeriesGraphForm graphForm = new TimeSeriesGraphForm("Fitness (Best and Mean)", "Generation", "Fitness", string.Empty, _dsList.ToArray(), _ea, _selectedExperiment.MaxGen);
             _timeSeriesGraphFormList.Add(graphForm);
 
             // Attach a event handler to update this main form when the graph form is closed.
@@ -994,7 +1002,7 @@ namespace SharpNeatGUI
 
             // Create form.
             TimeSeriesGraphForm graphForm = new TimeSeriesGraphForm("Complexity (Best and Mean)", "Generation", "Complexity", string.Empty,
-                                                 new TimeSeriesDataSource[] {dsBestCmplx, dsMeanCmplx, dsMeanCmplxMA}, _ea);
+                                                 new TimeSeriesDataSource[] {dsBestCmplx, dsMeanCmplx, dsMeanCmplxMA}, _ea, _selectedExperiment.MaxGen);
             _timeSeriesGraphFormList.Add(graphForm);
 
             // Attach a event handler to update this main form when the graph form is closed.
@@ -1022,7 +1030,7 @@ namespace SharpNeatGUI
                                                             });
             // Create form.
             TimeSeriesGraphForm graphForm = new TimeSeriesGraphForm("Evaluations Per Second", "Generation", "Evaluations", string.Empty,
-                                                 new TimeSeriesDataSource[] {dsEvalsPerSec}, _ea);
+                                                 new TimeSeriesDataSource[] {dsEvalsPerSec}, _ea, _selectedExperiment.MaxGen);
             _timeSeriesGraphFormList.Add(graphForm);
 
             // Attach a event handler to update this main form when the graph form is closed.
@@ -1741,7 +1749,7 @@ namespace SharpNeatGUI
                     __log.WarnFormat("No prediction filename specified. Write the name of the prediction file.");
                     return;
                 }
-
+                /*
                 _predictor.loadPopulation();
 
                 if (_predictor.GenomeList.Count == 0)
@@ -1749,13 +1757,17 @@ namespace SharpNeatGUI
                     __log.WarnFormat("No genome loaded from file [{0}]", txtLoadGenomePath.Text);
                     return;
                 }
+                */
+
+                ReadAndUpdateExperimentParams();
+
 
                 txtPredictionStatus.Text = "Predicting";
                 txtPredictionStatus.BackColor = Color.LightBlue;
 
                 try
                 {
-                    _predictor.Predict(txtPredictionFilePath.Text, chBoxNormalizeData.Checked, ParseInt(txtNormalizeRange, _selectedExperiment.NormalizeRange));
+                    _predictor.Predict(txtPredictionFilePath.Text);
                 }
                 catch (System.IO.IOException)
                 {
